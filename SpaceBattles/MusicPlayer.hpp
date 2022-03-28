@@ -10,7 +10,6 @@
 
 #include "MusicThemes.hpp"
 
-
 class MusicPlayer : private sf::NonCopyable
 {
 public:
@@ -22,11 +21,8 @@ public:
 	void SetPaused(bool paused);
 	void SetVolume(float volume);
 
-
 private:
 	sf::Music m_music;
 	std::map<MusicThemes, std::string>	m_filenames;
 	float m_volume;
 };
-
-

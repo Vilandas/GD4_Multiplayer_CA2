@@ -8,7 +8,7 @@
 class TextNode : public SceneNode
 {
 public:
-	explicit TextNode(const FontHolder& fonts, const std::string& text);
+	explicit TextNode(const SceneLayers& scene_layers, const FontHolder& fonts, const std::string& text);
 	void SetString(const std::string& text);
 
 private:
@@ -17,4 +17,3 @@ private:
 private:
 	sf::Text m_text;
 };
-

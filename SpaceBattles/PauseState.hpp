@@ -16,11 +16,9 @@ public:
 	virtual bool		Update(sf::Time dt);
 	virtual bool		HandleEvent(const sf::Event& event);
 
-
 private:
 	sf::Sprite			m_background_sprite;
 	sf::Text			m_paused_text;
 	GUI::Container 		m_gui_container;
 	bool				m_let_updates_through;
 };
-

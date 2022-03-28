@@ -18,5 +18,6 @@ namespace Category
 
 		kAircraft = kPlayerAircraft | kAlliedAircraft | kEnemyAircraft,
 		kProjectile = kAlliedProjectile | kEnemyProjectile,
+		kPlayerCharacter = kPlayerAircraft
 	};
 }

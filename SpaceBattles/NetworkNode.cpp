@@ -1,8 +1,8 @@
 #include "NetworkNode.hpp"
 
-NetworkNode::NetworkNode()
-: SceneNode()
-, m_pending_actions()
+NetworkNode::NetworkNode(const SceneLayers& scene_layers)
+	: SceneNode(scene_layers)
+	, m_pending_actions()
 {
 }
 

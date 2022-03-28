@@ -10,15 +10,21 @@
 
 #include "Command.hpp"
 #include "CommandQueue.hpp"
+#include "Layers.hpp"
+#include "Utility.hpp"
 
 class SceneNode : public sf::Transformable, public sf::Drawable, private sf::NonCopyable
 {
 public:
 	typedef  std::unique_ptr<SceneNode> Ptr;
 	typedef std::pair<SceneNode*, SceneNode*> Pair;
+	typedef std::array<SceneNode*, static_cast<int>(Layers::kLayerCount)> SceneLayers;
 
 public:
-	explicit SceneNode(Category::Type category = Category::kNone);
+	explicit SceneNode(
+		const SceneLayers& scene_layers,
+		Category::Type category = Category::kNone);
+
 	void AttachChild(Ptr child);
 	Ptr DetachChild(const SceneNode& node);
 
@@ -26,14 +32,22 @@ public:
 
 	sf::Vector2f GetWorldPosition() const;
 	sf::Transform GetWorldTransform() const;
+	const SceneLayers& GetSceneLayers() const;
 
 	void OnCommand(const Command& command, sf::Time dt);
 	virtual unsigned int GetCategory() const;
 	virtual sf::FloatRect GetBoundingRect() const;
+	virtual sf::Vector2f GetVelocity() const;
+	virtual float GetDeltaTimeInSeconds() const;
 
-	void CheckSceneCollision(SceneNode& scene_graph, std::set<Pair>& collision_pairs);
+	virtual bool IsDestroyed() const;
+	virtual bool IsMarkedForRemoval() const;
+
+	void PredictCollisionsWithScene(SceneNode& scene_graph, std::set<SceneNode*>& collisions);
 	void RemoveWrecks();
 
+protected:
+	virtual void HandleCollisions();
 
 private:
 	virtual void UpdateCurrent(sf::Time dt, CommandQueue& commands);
@@ -44,15 +58,10 @@ private:
 	virtual void DrawCurrent(sf::RenderTarget&, sf::RenderStates states) const;
 	void DrawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	void DrawBoundingRect(sf::RenderTarget& target, sf::RenderStates states, sf::FloatRect& bounding_rect) const;
-
-	virtual bool IsDestroyed() const;
-	virtual bool IsMarkedForRemoval() const;
-	
-	void CheckNodeCollision(SceneNode& node, std::set<Pair>& collisionPairs);
-	
+	static void DrawBoundingRect(sf::RenderTarget& target, sf::RenderStates states, const sf::FloatRect& bounding_rect);
 
 private:
+	const SceneLayers& m_scene_layers;
 	std::vector<Ptr> m_children;
 	SceneNode* m_parent;
 	Category::Type m_default_category;

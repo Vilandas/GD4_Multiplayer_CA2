@@ -10,21 +10,21 @@
 #include "SettingsState.hpp"
 #include "MultiplayerGameState.hpp"
 
-
 const sf::Time Application::kTimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-:m_window(sf::VideoMode(1024, 768), "Network", sf::Style::Close)
-, m_key_binding_1(1)
-, m_key_binding_2(2)
-, m_stack(State::Context(m_window, m_textures, m_fonts, m_music, m_sounds, m_key_binding_1, m_key_binding_2))
-, m_statistics_numframes(0)
+	: m_window(sf::VideoMode(1920, 1080), "Space Battles", sf::Style::Close)
+	, m_camera(m_window.getDefaultView())
+	, m_key_binding_1(1)
+	, m_key_binding_2(2)
+	, m_stack(State::Context(m_window, m_textures, m_fonts, m_music, m_sounds, m_camera, m_key_binding_1, m_key_binding_2))
+	, m_statistics_numframes(0)
 {
 	m_window.setKeyRepeatEnabled(false);
 
 	m_fonts.Load(Fonts::Main, "Media/Fonts/Sansation.ttf");
-	m_textures.Load(Textures::kTitleScreen, "Media/Textures/TitleScreen.png");
-	m_textures.Load(Textures::kButtons, "Media/Textures/Buttons.png");
+
+	LoadTextures();
 
 	m_statistics_text.setFont(m_fonts.Get(Fonts::Main));
 	m_statistics_text.setPosition(5.f, 5.f);
@@ -49,7 +49,7 @@ void Application::Run()
 			ProcessInput();
 			Update(kTimePerFrame);
 
-			if(m_stack.IsEmpty())
+			if (m_stack.IsEmpty())
 			{
 				m_window.close();
 			}
@@ -100,6 +100,32 @@ void Application::UpdateStatistics(sf::Time elapsed_time)
 
 		m_statistics_updatetime -= sf::seconds(1.0f);
 		m_statistics_numframes = 0;
+	}
+}
+
+void Application::LoadTextures()
+{
+	m_textures.Load(Textures::kDefault, "Media/Textures/Default.png");
+	m_textures.Load(Textures::kTitleScreen, "Media/Textures/Backgrounds/TitleScreen.png");
+	m_textures.Load(Textures::kButtons, "Media/Textures/Buttons.png");
+
+	m_textures.Load(Textures::kParticle, "Media/Textures/Effects/Particle.png");
+	m_textures.Load(Textures::kExplosion, "Media/Textures/Effects/Explosion.png");
+
+	m_textures.Load(Textures::kBrunoIdle, "Media/Textures/Bruno/Idle.png");
+	m_textures.Load(Textures::kBrunoRun, "Media/Textures/Bruno/Run.png");
+
+	m_textures.Load(Textures::kJungle, "Media/Textures/Backgrounds/Jungle.png");
+}
+
+void Application::LoadTexturesPattern(Textures start_texture, Textures end_texture, const std::string& location_prefix)
+{
+	int i = 0;
+	for (int texture = static_cast<int>(start_texture); texture <= static_cast<int>(end_texture); texture++)
+	{
+		std::string path = location_prefix + std::to_string(i) + ".png";
+		m_textures.Load(static_cast<Textures>(texture), path);
+		i++;
 	}
 }
 

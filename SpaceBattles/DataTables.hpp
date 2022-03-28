@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 #include <vector>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -7,53 +6,44 @@
 
 #include "ResourceIdentifiers.hpp"
 
-class Aircraft;
-
-struct Direction
+struct AnimationData
 {
-	Direction(float angle, float distance)
-		: m_angle(angle), m_distance(distance)
+	Textures m_texture;
+	size_t m_frame_width;
+	size_t m_frame_height;
+	size_t m_frames;
+	float m_time_per_frame;
+};
+
+struct PlatformerAnimationData
+{
+	AnimationData m_idle;
+	AnimationData m_run;
+	AnimationData m_jump;
+
+	std::vector<AnimationData> ToVector() const
 	{
+		return { m_idle, m_run, m_jump };
 	}
-	float m_angle;
-	float m_distance;
 };
 
-struct AircraftData
+struct PlatformerCharacterData
 {
-	int m_hitpoints;
-	float m_speed;
-	Textures m_texture;
-	sf::IntRect m_texture_rect;
-	sf::Time m_fire_interval;
-	std::vector<Direction> m_directions;
-	bool m_has_roll_animation;
-};
-
-struct ProjectileData
-{
-	int m_damage;
-	float m_speed;
-	Textures m_texture;
-	sf::IntRect m_texture_rect;
-};
-
-struct PickupData
-{
-	std::function<void(Aircraft&)> m_action;
-	Textures m_texture;
-	sf::IntRect m_texture_rect;
+	float m_jump_force;
+	float m_acceleration;
+	sf::Vector2f m_max_velocity;
+	float m_deceleration;
+	float m_gravity;
+	float m_coyote_time;
+	int m_health;
+	PlatformerAnimationData m_animation_data;
 };
 
 struct ParticleData
 {
-	sf::Color						m_color;
-	sf::Time						m_lifetime;
+	sf::Color m_color;
+	sf::Time m_lifetime;
 };
 
-std::vector<AircraftData> InitializeAircraftData();
-std::vector<ProjectileData> InitializeProjectileData();
-std::vector<PickupData> InitializePickupData();
+std::vector<PlatformerCharacterData> InitializePlatformerCharacterData();
 std::vector<ParticleData> InitializeParticleData();
-
-

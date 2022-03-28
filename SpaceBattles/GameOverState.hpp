@@ -8,13 +8,11 @@ class GameOverState : public State
 public:
 	GameOverState(StateStack& stack, Context context, const std::string& text);
 
-	virtual void		Draw();
-	virtual bool		Update(sf::Time dt);
-	virtual bool		HandleEvent(const sf::Event& event);
-
+	virtual void Draw();
+	virtual bool Update(sf::Time dt);
+	virtual bool HandleEvent(const sf::Event& event);
 
 private:
-	sf::Text			m_game_over_text;
-	sf::Time			m_elapsed_time;
+	sf::Text m_game_over_text;
+	sf::Time m_elapsed_time;
 };
-

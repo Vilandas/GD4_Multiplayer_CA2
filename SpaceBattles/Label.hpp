@@ -22,4 +22,3 @@ namespace GUI
 		sf::Text m_text;
 	};
 }
-

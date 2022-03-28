@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Time.hpp>
 
+#include "Camera.hpp"
 #include "KeyBinding.hpp"
 #include "MusicPlayer.hpp"
 #include "Player.hpp"
@@ -21,11 +22,13 @@ private:
 	void Update(sf::Time delta_time);
 	void Render();
 	void UpdateStatistics(sf::Time elapsed_time);
+	void LoadTextures();
+	void LoadTexturesPattern(Textures start_texture, Textures end_texture, const std::string& location_prefix);
 	void RegisterStates();
 
 private:
 	sf::RenderWindow m_window;
-
+	Camera m_camera;
 	TextureHolder m_textures;
 	FontHolder m_fonts;
 
@@ -43,4 +46,3 @@ private:
 	std::size_t m_statistics_numframes;
 	static const sf::Time kTimePerFrame;
 };
-

@@ -4,10 +4,9 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
-
 PostEffect::~PostEffect() = default;
 
-void PostEffect::ApplyShader(const sf::Shader& shader, sf::RenderTarget& output)
+void PostEffect::ApplyShader(const sf::Shader & shader, sf::RenderTarget & output)
 {
 	sf::Vector2f output_size = static_cast<sf::Vector2f>(output.getSize());
 

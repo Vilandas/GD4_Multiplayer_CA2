@@ -3,9 +3,9 @@ void ResourceHolder<Resource, Identifier>::Load(Identifier id, const std::string
 {
 	//Create and load resource
 	std::unique_ptr<Resource> resource(new Resource());
-	if(!resource->loadFromFile(filename))
+	if (!resource->loadFromFile(filename))
 	{
-		throw std::runtime_error("ResouceHolder::load - Failed to load " + filename);
+		throw std::runtime_error("ResourceHolder::load - Failed to load " + filename);
 	}
 	//If loading successful insert resource into map
 	InsertResource(id, std::move(resource));
@@ -19,7 +19,7 @@ void ResourceHolder<Resource, Identifier>::Load(Identifier id, const std::string
 	std::unique_ptr<Resource> resource(new Resource());
 	if (!resource->loadFromFile(filename, second_parameter))
 	{
-		throw std::runtime_error("ResouceHolder::load - Failed to load " + filename);
+		throw std::runtime_error("ResourceHolder::load - Failed to load " + filename);
 	}
 	//If loading successful insert resource into map
 	InsertResource(id, std::move(resource));
@@ -48,4 +48,3 @@ void ResourceHolder<Resource, Identifier>::InsertResource(Identifier id, std::un
 	auto inserted = m_resource_map.insert(std::make_pair(id, std::move(resource)));
 	assert(inserted.second);
 }
-

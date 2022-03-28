@@ -5,7 +5,6 @@
 
 #include <cmath>
 
-
 namespace
 {
 	// Sound coordinate system, point of view of a player in front of the screen:
@@ -51,9 +50,9 @@ void SoundPlayer::Play(SoundEffect effect, sf::Vector2f position)
 void SoundPlayer::RemoveStoppedSounds()
 {
 	m_sounds.remove_if([](const sf::Sound& s)
-	{
-		return s.getStatus() == sf::Sound::Stopped;
-	});
+		{
+			return s.getStatus() == sf::Sound::Stopped;
+		});
 }
 
 void SoundPlayer::SetListenerPosition(sf::Vector2f position)

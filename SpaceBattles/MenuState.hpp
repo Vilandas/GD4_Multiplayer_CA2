@@ -17,4 +17,3 @@ private:
 	sf::Sprite m_background_sprite;
 	GUI::Container m_gui_container;
 };
-

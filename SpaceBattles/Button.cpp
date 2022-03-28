@@ -38,6 +38,12 @@ namespace GUI
 		m_is_toggle = flag;
 	}
 
+	sf::FloatRect Button::GetBoundingRect() const
+	{
+		return GetWorldTransform().transformRect(m_sprite.getGlobalBounds());
+	}
+
+
 	bool Button::IsSelectable() const
 	{
 		return true;

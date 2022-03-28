@@ -8,7 +8,6 @@
 
 #include <array>
 
-
 class BloomEffect : public PostEffect
 {
 public:
@@ -16,10 +15,8 @@ public:
 
 	virtual void Apply(const sf::RenderTexture& input, sf::RenderTarget& output);
 
-
 private:
 	typedef std::array<sf::RenderTexture, 2> RenderTextureArray;
-
 
 private:
 	void PrepareTextures(sf::Vector2u size);
@@ -30,7 +27,6 @@ private:
 	void Downsample(const sf::RenderTexture& input, sf::RenderTexture& output);
 	void Add(const sf::RenderTexture& source, const sf::RenderTexture& bloom, sf::RenderTarget& target);
 
-
 private:
 	ShaderHolder		m_shaders;
 
@@ -38,5 +34,3 @@ private:
 	RenderTextureArray	m_firstpass_textures;
 	RenderTextureArray	m_secondpass_textures;
 };
-
-

@@ -4,6 +4,8 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Window/Event.hpp>
 #include <map>
+#include <unordered_set>
+
 #include "CommandQueue.hpp"
 #include "MissionStatus.hpp"
 #include "PlayerAction.hpp"
@@ -20,7 +22,6 @@ public:
 	void HandleNetworkEvent(PlayerAction action, CommandQueue& commands);
 	void HandleNetworkRealtimeChange(PlayerAction action, bool action_enabled);
 
-	
 	void SetMissionStatus(MissionStatus status);
 	MissionStatus GetMissionStatus() const;
 
@@ -33,9 +34,10 @@ private:
 private:
 	const KeyBinding* m_key_binding;
 	std::map<PlayerAction, Command> m_action_binding;
+	std::map<PlayerAction, Command> m_on_release_action_binding;
 	std::map<PlayerAction, bool> m_action_proxies;
+	std::unordered_set<PlayerAction> m_active_actions;
 	MissionStatus m_current_mission_status;
 	int m_identifier;
 	sf::TcpSocket* m_socket;
 };
-

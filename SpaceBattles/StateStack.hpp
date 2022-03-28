@@ -10,7 +10,6 @@
 #include <functional>
 #include <map>
 
-
 namespace sf
 {
 	class Event;
@@ -79,7 +78,3 @@ void StateStack::RegisterState(StateID state_id, Param1 arg1)
 		return State::Ptr(new T(*this, m_context, arg1));
 	};
 }
-
-
-
-

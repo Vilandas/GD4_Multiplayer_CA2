@@ -25,6 +25,3 @@ std::function<void(SceneNode&, sf::Time)> DerivedAction(Function fn)
 		fn(static_cast<GameObject&>(node), dt);
 	};
 }
-
-
-

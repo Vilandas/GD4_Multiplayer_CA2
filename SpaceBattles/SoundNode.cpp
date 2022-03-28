@@ -4,8 +4,9 @@
 #include "SoundPlayer.hpp"
 
 
-SoundNode::SoundNode(SoundPlayer& player)
-	: m_sounds(player)
+SoundNode::SoundNode(const SceneLayers& scene_layers, SoundPlayer& player)
+	: SceneNode(scene_layers)
+	, m_sounds(player)
 {
 }
 

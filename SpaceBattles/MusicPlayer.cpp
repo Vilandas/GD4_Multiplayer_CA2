@@ -1,6 +1,5 @@
 #include "MusicPlayer.hpp"
 
-
 MusicPlayer::MusicPlayer()
 	: m_volume(100.f)
 {
@@ -10,6 +9,7 @@ MusicPlayer::MusicPlayer()
 
 void MusicPlayer::Play(MusicThemes theme)
 {
+	return;
 	std::string filename = m_filenames[theme];
 
 	if (!m_music.openFromFile(filename))

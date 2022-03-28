@@ -1,11 +1,17 @@
 #pragma once
 enum class Textures
 {
-	kEntities,
-	kJungle,
+	kDefault,
+
 	kTitleScreen,
 	kButtons,
-	kExplosion,
+
 	kParticle,
-	kFinishLine
+	kExplosion,
+
+	kBrunoIdle,
+	kBrunoRun,
+	kBrunoJump,
+
+	kJungle,
 };

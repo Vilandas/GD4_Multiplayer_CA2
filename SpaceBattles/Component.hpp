@@ -19,6 +19,11 @@ namespace GUI
 		Component();
 		virtual ~Component() override = default;
 
+		void SetParent(Component* component);
+		virtual sf::FloatRect GetBoundingRect() const;
+		sf::Vector2f GetWorldPosition() const;
+		sf::Transform GetWorldTransform() const;
+
 		virtual bool IsSelectable() const = 0;
 		bool IsSelected() const;
 		virtual void Select();
@@ -30,8 +35,8 @@ namespace GUI
 		virtual void HandleEvent(const sf::Event& event) = 0;
 
 	private:
+		Component* m_parent;
 		bool m_is_selected;
 		bool m_is_active;
 	};
 }
-

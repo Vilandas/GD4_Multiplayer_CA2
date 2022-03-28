@@ -27,15 +27,16 @@ namespace GUI
 		void SetText(const std::string& text);
 		void SetToggle(bool flag);
 
-		virtual bool IsSelectable() const override;
-		virtual void Select() override;
-		virtual void Deselect() override;
-		virtual void Activate() override;
-		virtual void Deactivate() override;
-		virtual void HandleEvent(const sf::Event& event) override;
+		sf::FloatRect GetBoundingRect() const override;
+		bool IsSelectable() const override;
+		void Select() override;
+		void Deselect() override;
+		void Activate() override;
+		void Deactivate() override;
+		void HandleEvent(const sf::Event& event) override;
 
 	private:
-		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 		void ChangeTexture(ButtonType buttonType);
 
 	private:
@@ -46,4 +47,3 @@ namespace GUI
 		SoundPlayer& m_sounds;
 	};
 }
-

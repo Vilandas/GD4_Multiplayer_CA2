@@ -10,12 +10,11 @@
 class ParticleNode : public SceneNode
 {
 public:
-	ParticleNode(ParticleType type, const TextureHolder& textures);
+	ParticleNode(const SceneLayers& scene_layers, ParticleType type, const TextureHolder& textures);
 
 	void AddParticle(sf::Vector2f position);
 	ParticleType GetParticleType() const;
 	virtual unsigned int GetCategory() const;
-
 
 private:
 	virtual void UpdateCurrent(sf::Time dt, CommandQueue& commands);
@@ -23,7 +22,6 @@ private:
 
 	void AddVertex(float worldX, float worldY, float texCoordX, float texCoordY, const sf::Color& color) const;
 	void ComputeVertices() const;
-
 
 private:
 	std::deque<Particle> m_particles;
@@ -33,4 +31,3 @@ private:
 	mutable sf::VertexArray	m_vertex_array;
 	mutable bool m_needs_vertex_update;
 };
-

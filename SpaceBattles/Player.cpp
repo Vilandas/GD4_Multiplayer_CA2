@@ -1,63 +1,68 @@
 #include "Player.hpp"
-#include "Aircraft.hpp"
 #include "NetworkProtocol.hpp"
 #include <SFML/Network/Packet.hpp>
-#include <algorithm>
 
-struct AircraftMover
+#include "PlatformerCharacter.hpp"
+
+class Entity;
+
+struct EntityDirectionAdder
 {
-	AircraftMover(float vx, float vy, int identifier)
-	: velocity(vx, vy)
-	, aircraft_id(identifier)
+	EntityDirectionAdder(int vx, int vy, int identifier)
+		: velocity(vx, vy)
+		, identifier(identifier)
 	{
-		
 	}
 
-	void operator()(Aircraft& aircraft, sf::Time) const
+	void operator()(Entity& entity, sf::Time) const
 	{
-		if (aircraft.GetIdentifier() == aircraft_id)
+		if (entity.GetIdentifier() == identifier)
 		{
-			aircraft.Accelerate(velocity * aircraft.GetMaxSpeed());
+			entity.AddDirection(velocity);
 		}
 	}
 
-	sf::Vector2f velocity;
-	int aircraft_id;
+	sf::Vector2i velocity;
+	int identifier;
 };
 
-struct AircraftFireTrigger
+struct EntityDirectionRemover
 {
-	AircraftFireTrigger(int identifier)
-		: aircraft_id(identifier)
+	EntityDirectionRemover(int vx, int vy, int identifier)
+		: velocity(vx, vy)
+		, identifier(identifier)
 	{
 	}
 
-	void operator() (Aircraft& aircraft, sf::Time) const
+	void operator()(Entity& entity, sf::Time) const
 	{
-		if (aircraft.GetIdentifier() == aircraft_id)
-			aircraft.Fire();
+		if (entity.GetIdentifier() == identifier)
+		{
+			entity.RemoveDirection(velocity);
+		}
 	}
 
-	int aircraft_id;
+	sf::Vector2i velocity;
+	int identifier;
 };
 
-struct AircraftMissileTrigger
+struct PlatformerJump
 {
-	AircraftMissileTrigger(int identifier)
-		: aircraft_id(identifier)
+	PlatformerJump(const int identifier)
+		: identifier(identifier)
 	{
 	}
 
-	void operator() (Aircraft& aircraft, sf::Time) const
+	void operator()(PlatformerCharacter& platformer, sf::Time) const
 	{
-		if (aircraft.GetIdentifier() == aircraft_id)
-			aircraft.LaunchMissile();
+		if (platformer.GetIdentifier() == identifier)
+		{
+			platformer.Jump();
+		}
 	}
 
-	int aircraft_id;
+	int identifier;
 };
-
-
 
 Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding)
 	: m_key_binding(binding)
@@ -69,11 +74,9 @@ Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* bi
 	InitialiseActions();
 
 	// Assign all categories to player's aircraft
-	for(auto & pair : m_action_binding)
-		pair.second.category = Category::kPlayerAircraft;
+	for (auto& pair : m_action_binding)
+		pair.second.category = Category::kPlayerCharacter;
 }
-
-
 
 void Player::HandleEvent(const sf::Event& event, CommandQueue& commands)
 {
@@ -126,7 +129,7 @@ bool Player::IsLocal() const
 
 void Player::DisableAllRealtimeActions()
 {
-	for(auto & action : m_action_proxies)
+	for (const auto& action : m_action_proxies)
 	{
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::PacketType::PlayerRealtimeChange);
@@ -144,7 +147,7 @@ void Player::HandleRealtimeInput(CommandQueue& commands)
 	{
 		// Lookup all actions and push corresponding commands to queue
 		std::vector<PlayerAction> activeActions = m_key_binding->GetRealtimeActions();
-		for(PlayerAction action : activeActions)
+		for (PlayerAction action : activeActions)
 			commands.Push(m_action_binding[action]);
 	}
 }
@@ -154,7 +157,7 @@ void Player::HandleRealtimeNetworkInput(CommandQueue& commands)
 	if (m_socket && !IsLocal())
 	{
 		// Traverse all realtime input proxies. Because this is a networked game, the input isn't handled directly
-		for(auto pair : m_action_proxies)
+		for (auto pair : m_action_proxies)
 		{
 			if (pair.second && IsRealtimeAction(pair.first))
 				commands.Push(m_action_binding[pair.first]);
@@ -172,7 +175,6 @@ void Player::HandleNetworkRealtimeChange(PlayerAction action, bool actionEnabled
 	m_action_proxies[action] = actionEnabled;
 }
 
-
 void Player::SetMissionStatus(MissionStatus status)
 {
 	m_current_mission_status = status;
@@ -185,12 +187,8 @@ MissionStatus Player::GetMissionStatus() const
 
 void Player::InitialiseActions()
 {
-	m_action_binding[PlayerAction::kMoveLeft].action = DerivedAction<Aircraft>(AircraftMover(-1, 0, m_identifier));
-	m_action_binding[PlayerAction::kMoveRight].action = DerivedAction<Aircraft>(AircraftMover(+1, 0, m_identifier));
-	m_action_binding[PlayerAction::kMoveUp].action = DerivedAction<Aircraft>(AircraftMover(0, -1, m_identifier));
-	m_action_binding[PlayerAction::kMoveDown].action = DerivedAction<Aircraft>(AircraftMover(0, +1, m_identifier));
-	m_action_binding[PlayerAction::kFire].action = DerivedAction<Aircraft>(AircraftFireTrigger(m_identifier));
-	m_action_binding[PlayerAction::kLaunchMissile].action = DerivedAction<Aircraft>(AircraftMissileTrigger(m_identifier));
+	m_action_binding[PlayerAction::kMoveLeft].action = DerivedAction<Entity>(EntityDirectionAdder(-1, 0, m_identifier));
+	m_action_binding[PlayerAction::kMoveRight].action = DerivedAction<Entity>(EntityDirectionAdder(+1, 0, m_identifier));
+	m_action_binding[PlayerAction::kMoveUp].action = DerivedAction<Entity>(EntityDirectionAdder(0, -1, m_identifier));
+	m_action_binding[PlayerAction::kMoveDown].action = DerivedAction<Entity>(EntityDirectionAdder(0, +1, m_identifier));
 }
-
-

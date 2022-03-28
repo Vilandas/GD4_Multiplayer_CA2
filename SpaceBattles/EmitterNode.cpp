@@ -4,8 +4,8 @@
 #include "Command.hpp"
 
 
-EmitterNode::EmitterNode(ParticleType type)
-	: SceneNode()
+EmitterNode::EmitterNode(const SceneLayers& scene_layers, ParticleType type)
+	: SceneNode(scene_layers)
 	, m_accumulated_time(sf::Time::Zero)
 	, m_type(type)
 	, m_particle_system(nullptr)

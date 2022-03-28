@@ -6,18 +6,42 @@
 
 namespace GUI
 {
-	Container::Container()
-	: m_selected_child(-1)
+	Container::Container(sf::RenderWindow& window, Camera& camera)
+		: m_window(window)
+		, m_camera(camera)
+		, m_selected_child(-1)
 	{
 	}
-	//TODO pass by reference as resharper is suggesting?
-	void Container::Pack(Component::Ptr component)
+
+	void Container::DeactivateAllExcept(const Component::Ptr& exception) const
 	{
+		for (const auto& child : m_children)
+		{
+			if (child != exception)
+			{
+				child->Deactivate();
+			}
+		}
+	}
+
+	void Container::DeactivateAll() const
+	{
+		for (const auto& child : m_children)
+		{
+			child->Deactivate();
+		}
+	}
+
+	bool Container::Pack(const Component::Ptr& component)
+	{
+		component->SetParent(this);
 		m_children.emplace_back(component);
-		if(!HasSelection() && component->IsSelectable())
+		if (!HasSelection() && component->IsSelectable())
 		{
 			Select(m_children.size() - 1);
 		}
+
+		return true;
 	}
 
 	bool Container::IsSelectable() const
@@ -27,26 +51,49 @@ namespace GUI
 
 	void Container::HandleEvent(const sf::Event& event)
 	{
-		if(HasSelection() && m_children[m_selected_child]->IsActive())
+		if (HasSelection() && m_children[m_selected_child]->IsActive())
 		{
 			m_children[m_selected_child]->HandleEvent(event);
 		}
-		else if(event.type == sf::Event::KeyReleased)
+
+		if (event.type == sf::Event::MouseMoved)
 		{
-			if(event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::Up)
+			for (size_t i = 0; i < m_children.size(); i++)
+			{
+				const sf::Vector2f mouse = m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window), m_camera.GetView());
+				const auto child = m_children[i];
+				if (child->GetBoundingRect().contains(mouse.x, mouse.y))
+				{
+					Select(i);
+				}
+			}
+		}
+		else if (event.type == sf::Event::MouseButtonReleased)
+		{
+			if (event.mouseButton.button == sf::Mouse::Left && HasSelection())
+			{
+				const sf::Vector2f mouse = m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window), m_camera.GetView());
+				if (m_children[m_selected_child]->GetBoundingRect().contains(mouse.x, mouse.y))
+				{
+					m_children[m_selected_child]->Activate();
+				}
+			}
+		}
+		else if (event.type == sf::Event::KeyReleased)
+		{
+			if (event.key.code == sf::Keyboard::W || event.key.code == sf::Keyboard::Up)
 			{
 				SelectPrevious();
 			}
-			else if(event.key.code == sf::Keyboard::S || event.key.code == sf::Keyboard::Down)
+			else if (event.key.code == sf::Keyboard::S || event.key.code == sf::Keyboard::Down)
 			{
 				SelectNext();
 			}
-			else if(event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
+			else if (event.key.code == sf::Keyboard::Return || event.key.code == sf::Keyboard::Space)
 			{
-				if(HasSelection())
+				if (HasSelection())
 				{
 					m_children[m_selected_child]->Activate();
-
 				}
 			}
 		}
@@ -55,7 +102,7 @@ namespace GUI
 	void Container::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		states.transform *= getTransform();
-		for(const Component::Ptr& child : m_children)
+		for (const Component::Ptr& child : m_children)
 		{
 			target.draw(*child, states);
 		}
@@ -69,9 +116,9 @@ namespace GUI
 
 	void Container::Select(std::size_t index)
 	{
-		if(index < m_children.size() && m_children[index]->IsSelectable())
+		if (index < m_children.size() && m_children[index]->IsSelectable())
 		{
-			if(HasSelection())
+			if (HasSelection())
 			{
 				m_children[m_selected_child]->Deselect();
 			}
@@ -82,7 +129,7 @@ namespace GUI
 
 	void Container::SelectNext()
 	{
-		if(!HasSelection())
+		if (!HasSelection())
 		{
 			return;
 		}

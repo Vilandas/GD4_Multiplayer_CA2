@@ -3,5 +3,4 @@ Command::Command()
 	: action()
 	, category(Category::kNone)
 {
-	
 }

@@ -2,7 +2,8 @@
 enum class Layers
 {
 	kBackground,
-	kLowerAir,
-	kUpperAir,
+	kPlatforms,
+	kPlayers,
+	kAir,
 	kLayerCount
 };

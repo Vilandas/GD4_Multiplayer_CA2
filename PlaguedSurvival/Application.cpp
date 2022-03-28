@@ -13,7 +13,7 @@
 const sf::Time Application::kTimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-	: m_window(sf::VideoMode(1920, 1080), "Space Battles", sf::Style::Close)
+	: m_window(sf::VideoMode(1920, 1080), "Plagued Survival", sf::Style::Close)
 	, m_camera(m_window.getDefaultView())
 	, m_key_binding_1(1)
 	, m_key_binding_2(2)
@@ -114,8 +114,6 @@ void Application::LoadTextures()
 
 	m_textures.Load(Textures::kBrunoIdle, "Media/Textures/Bruno/Idle.png");
 	m_textures.Load(Textures::kBrunoRun, "Media/Textures/Bruno/Run.png");
-
-	m_textures.Load(Textures::kJungle, "Media/Textures/Backgrounds/Jungle.png");
 }
 
 void Application::LoadTexturesPattern(Textures start_texture, Textures end_texture, const std::string& location_prefix)

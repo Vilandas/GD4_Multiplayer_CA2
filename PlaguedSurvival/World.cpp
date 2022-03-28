@@ -18,7 +18,7 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	, m_camera(camera)
 	, m_scene_layers()
 	, m_scenegraph(m_scene_layers)
-	, m_world_bounds(0.f, 0.f, 768.f, 432.f)
+	, m_world_bounds(0.f, 0.f, 1024.f * 2, 1024.f * 2)
 	, m_spawn_position(20, 100)
 	, m_networked_world(networked)
 	, m_network_node(nullptr)
@@ -27,7 +27,8 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	m_scene_texture.create(m_window.getSize().x, m_window.getSize().y);
 
 	m_camera.SetCenter(m_spawn_position);
-	m_camera.SetSize(384 * 1.5f, 216 * 1.5f);
+	//m_camera.SetSize(384 * 1.5f, 216 * 1.5f);
+	m_camera.SetSize(640, 360);
 	m_camera.SetBoundsConstraint(m_world_bounds);
 
 	BuildScene();
@@ -101,7 +102,7 @@ sf::IntRect World::GetBackgroundRect(sf::Texture& texture) const
 		0,
 		0,
 		static_cast<int>(m_world_bounds.width),
-		static_cast<int>(texture.getSize().y)
+		static_cast<int>(m_world_bounds.height)
 	};
 }
 
@@ -166,11 +167,12 @@ void World::BuildScene()
 	}
 
 	//Prepare the background
-	sf::Texture& jungle = m_textures.Get(Textures::kJungle);
+	sf::Texture& nebula = m_textures.Get(Textures::kBlueNebula);
+	nebula.setRepeated(true);
 
 	//Add the background sprite to our scene
-	std::unique_ptr<SpriteNode> jungle_sprite(new SpriteNode(m_scene_layers, jungle, GetBackgroundRect(jungle)));
-	m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(jungle_sprite));
+	std::unique_ptr<SpriteNode> nebula_sprite(new SpriteNode(m_scene_layers, nebula, GetBackgroundRect(nebula)));
+	m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(nebula_sprite));
 
 	if (m_networked_world)
 	{

@@ -15,5 +15,6 @@ public:
 
 private:
 	sf::Sprite m_background_sprite;
+	Camera m_camera;
 	GUI::Container m_gui_container;
 };

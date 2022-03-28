@@ -27,6 +27,7 @@ private:
 
 private:
 	sf::Sprite m_background_sprite;
+	Camera m_camera;
 	GUI::Container m_gui_container;
 	std::array<GUI::Button::Ptr, 2 * (static_cast<int>(PlayerAction::kActionCount))> m_binding_buttons;
 	std::array<GUI::Label::Ptr, 2 * (static_cast<int>(PlayerAction::kActionCount))> 	m_binding_labels;

@@ -10,7 +10,8 @@
 
 MenuState::MenuState(StateStack& stack, Context context)
 	: State(stack, context)
-	, m_gui_container(*context.window, *context.camera)
+	, m_camera(context.window->getDefaultView())
+	, m_gui_container(*context.window, m_camera)
 {
 	sf::Texture& texture = context.textures->Get(Textures::kTitleScreen);
 

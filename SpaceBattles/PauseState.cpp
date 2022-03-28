@@ -12,7 +12,8 @@
 
 PauseState::PauseState(StateStack& stack, Context context, bool let_updates_through)
 	: State(stack, context)
-	, m_gui_container(*context.window, *context.camera)
+	, m_camera(context.window->getDefaultView())
+	, m_gui_container(*context.window, m_camera)
 	, m_let_updates_through(let_updates_through)
 {
 	sf::Font& font = context.fonts->Get(Fonts::Main);

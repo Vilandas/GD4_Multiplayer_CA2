@@ -456,8 +456,8 @@ void GameServer::HandleDisconnections()
 void GameServer::InformWorldState(sf::TcpSocket& socket)
 {
 	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Server::PacketType::InitialState);
-	packet << static_cast<sf::Int32>(m_player_count);
+	packet << static_cast<sf::Int32>(Server::PacketType::InitialState)
+	<< static_cast<sf::Int32>(m_player_count);
 
 	for (std::size_t i = 0; i < m_connected_players; ++i)
 	{
@@ -465,7 +465,10 @@ void GameServer::InformWorldState(sf::TcpSocket& socket)
 		{
 			for (sf::Int32 identifier : m_peers[i]->m_player_identifiers)
 			{
-				packet << identifier << m_player_info[identifier].m_position.x << m_player_info[identifier].m_position.y << m_player_info[identifier].m_hitpoints;
+				packet << identifier
+				<< m_player_info[identifier].m_position.x
+				<< m_player_info[identifier].m_position.y
+				<< m_player_info[identifier].m_hitpoints;
 			}
 		}
 	}

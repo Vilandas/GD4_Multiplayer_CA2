@@ -395,11 +395,6 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	case Server::PacketType::InitialState:
 	{
 		sf::Int32 player_count;
-		float world_height, current_scroll;
-		packet >> world_height >> current_scroll;
-
-		m_world.SetWorldHeight(world_height);
-
 		packet >> player_count;
 		for (sf::Int32 i = 0; i < player_count; ++i)
 		{

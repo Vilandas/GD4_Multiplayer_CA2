@@ -8,7 +8,8 @@
 
 SettingsState::SettingsState(StateStack& stack, Context context)
 	: State(stack, context)
-	, m_gui_container(*context.window, *context.camera)
+	, m_camera(context.window->getDefaultView())
+	, m_gui_container(*context.window, m_camera)
 {
 	m_background_sprite.setTexture(context.textures->Get(Textures::kTitleScreen));
 

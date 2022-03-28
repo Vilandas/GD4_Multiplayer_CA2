@@ -77,6 +77,7 @@ private:
 	SceneNode m_scenegraph;
 	CommandQueue m_command_queue;
 
+	float m_tile_size;
 	sf::FloatRect m_world_bounds;
 	sf::Vector2f m_spawn_position;
 	std::vector<PlayerObject*> m_player_characters;

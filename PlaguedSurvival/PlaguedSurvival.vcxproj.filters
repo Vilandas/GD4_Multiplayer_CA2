@@ -162,6 +162,9 @@
     <ClCompile Include="AnimatedSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TileNode.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ResourceHolder.hpp">
@@ -352,6 +355,9 @@
     </ClInclude>
     <ClInclude Include="AnimatedSprite.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TileNode.hpp">
+      <Filter>Header Files\Nodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

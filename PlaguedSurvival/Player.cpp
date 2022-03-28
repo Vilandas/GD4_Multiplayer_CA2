@@ -189,6 +189,5 @@ void Player::InitialiseActions()
 {
 	m_action_binding[PlayerAction::kMoveLeft].action = DerivedAction<Entity>(EntityDirectionAdder(-1, 0, m_identifier));
 	m_action_binding[PlayerAction::kMoveRight].action = DerivedAction<Entity>(EntityDirectionAdder(+1, 0, m_identifier));
-	m_action_binding[PlayerAction::kMoveUp].action = DerivedAction<Entity>(EntityDirectionAdder(0, -1, m_identifier));
-	m_action_binding[PlayerAction::kMoveDown].action = DerivedAction<Entity>(EntityDirectionAdder(0, +1, m_identifier));
+	m_action_binding[PlayerAction::kJump].action = DerivedAction<PlatformerCharacter>(PlatformerJump(m_identifier));
 }

@@ -13,6 +13,16 @@ enum class Textures
 	kBrunoRun,
 	kBrunoJump,
 
-	kJungle,
-	kBlueNebula,
+	kDocIdle,
+	kDocRun,
+
+	kDirt1,
+	kDirt2,
+	kDirt3,
+	kDirt4,
+	kDirt5,
+	kDirt6,
+	kDirt7,
+	kDirt8,
+	kDirt9,
 };

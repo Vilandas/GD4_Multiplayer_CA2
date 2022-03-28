@@ -112,13 +112,18 @@ void Application::LoadTextures()
 	m_textures.Load(Textures::kParticle, "Media/Textures/Effects/Particle.png");
 	m_textures.Load(Textures::kExplosion, "Media/Textures/Effects/Explosion.png");
 
-	m_textures.Load(Textures::kBrunoIdle, "Media/Textures/Bruno/Idle.png");
-	m_textures.Load(Textures::kBrunoRun, "Media/Textures/Bruno/Run.png");
+	m_textures.Load(Textures::kBrunoIdle, "Media/Textures/Characters/Bruno_Idle.png");
+	m_textures.Load(Textures::kBrunoRun, "Media/Textures/Characters/Bruno_Run.png");
+
+	m_textures.Load(Textures::kDocIdle, "Media/Textures/Characters/Doc_Idle.png");
+	m_textures.Load(Textures::kDocRun, "Media/Textures/Characters/Doc_Run.png");
+
+	LoadTexturesPattern(Textures::kDirt1, Textures::kDirt9, "Media/Textures/Tiles/Dirt/Dirt");
 }
 
 void Application::LoadTexturesPattern(Textures start_texture, Textures end_texture, const std::string& location_prefix)
 {
-	int i = 0;
+	int i = 1;
 	for (int texture = static_cast<int>(start_texture); texture <= static_cast<int>(end_texture); texture++)
 	{
 		std::string path = location_prefix + std::to_string(i) + ".png";

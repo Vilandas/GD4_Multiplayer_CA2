@@ -11,16 +11,14 @@ KeyBinding::KeyBinding(int control_preconfiguration)
 	{
 		m_key_map[sf::Keyboard::Left] = PlayerAction::kMoveLeft;
 		m_key_map[sf::Keyboard::Right] = PlayerAction::kMoveRight;
-		m_key_map[sf::Keyboard::Up] = PlayerAction::kMoveUp;
-		m_key_map[sf::Keyboard::Down] = PlayerAction::kMoveDown;
+		m_key_map[sf::Keyboard::Up] = PlayerAction::kJump;
 	}
 	else if (control_preconfiguration == 2)
 	{
 		// Player 2
 		m_key_map[sf::Keyboard::A] = PlayerAction::kMoveLeft;
 		m_key_map[sf::Keyboard::D] = PlayerAction::kMoveRight;
-		m_key_map[sf::Keyboard::W] = PlayerAction::kMoveUp;
-		m_key_map[sf::Keyboard::S] = PlayerAction::kMoveDown;
+		m_key_map[sf::Keyboard::Space] = PlayerAction::kJump;
 	}
 }
 
@@ -85,8 +83,6 @@ bool IsRealtimeAction(PlayerAction action)
 	{
 	case PlayerAction::kMoveLeft:
 	case PlayerAction::kMoveRight:
-	case PlayerAction::kMoveDown:
-	case PlayerAction::kMoveUp:
 		return true;
 
 	default:

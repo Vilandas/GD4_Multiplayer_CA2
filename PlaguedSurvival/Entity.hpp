@@ -41,12 +41,11 @@ protected:
 	void UpdateCurrent(sf::Time dt, CommandQueue& commands) override;
 	void UpdateDirections(sf::Time dt);
 
-private:
-	void Accelerate(sf::Time dt);
-	void Decelerate(sf::Time dt);
-	void ApplyGravity(sf::Time dt);
-	void ValidateVelocity();
-	void UpdateDirectionUnit();
+	virtual void Accelerate(sf::Time dt);
+	virtual void Decelerate(sf::Time dt);
+	virtual void ApplyGravity(sf::Time dt);
+	virtual void ValidateVelocity();
+	virtual void UpdateDirectionUnit();
 
 private:
 	int m_hitpoints;

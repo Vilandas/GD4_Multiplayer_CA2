@@ -23,7 +23,6 @@ public:
 
 	unsigned GetCategory() const override;
 	sf::FloatRect GetBoundingRect() const override;
-	int GetCollectedCoins() const;
 
 	void Jump();
 	void ResetJump();
@@ -33,8 +32,8 @@ public:
 protected:
 	void HandleCollisions() override;
 	void BlockingCollision(CollisionLocation location);
-	//void BouncyCollision(CollisionLocation location);
-	//void VerticalMovementCollision(CollisionLocation location, TileNode* tile);
+
+	void ApplyGravity(sf::Time dt) override;
 
 private:
 	void DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;

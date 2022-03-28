@@ -99,28 +99,12 @@ void PlatformerCharacter::HandleCollisions()
 
 	for (SceneNode* node : collisions)
 	{
-		//if (Category::kPlatform & node->GetCategory())
-		//{
-		//	const CollisionLocation location = Collision::CollisionLocation(*this, *node);
-		//	const auto tile = dynamic_cast<TileNode*>(node);
-		//	std::unordered_set<PlatformEffects> effects = tile->Data().GetEffects();
+		if (Category::kPlatform & node->GetCategory())
+		{
+			const CollisionLocation location = Collision::CollisionLocation(*this, *node);
 
-		//	if (effects.empty())
-		//	{
-		//		BlockingCollision(location);
-		//	}
-		//	else
-		//	{
-		//		if (effects.count(Bouncy))
-		//		{
-		//			BouncyCollision(location);
-		//		}
-		//		if (effects.count(VerticalMovement))
-		//		{
-		//			VerticalMovementCollision(location, tile);
-		//		}
-		//	}
-		//}
+			BlockingCollision(location);
+		}
 	}
 }
 
@@ -167,6 +151,16 @@ void PlatformerCharacter::BlockingCollision(CollisionLocation location)
 	case CollisionLocation::kNone:
 		break;
 	}
+}
+
+void PlatformerCharacter::ApplyGravity(sf::Time dt)
+{
+	std::cout << GetVelocity().y << std::endl;
+	if (GetVelocity().y > -300)
+	{
+		Entity::ApplyGravity(sf::seconds(dt.asSeconds() * 4));
+	}
+	else Entity::ApplyGravity(dt);
 }
 
 void PlatformerCharacter::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const

@@ -3,11 +3,13 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <iostream>
 #include <limits>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 #include "ParticleNode.hpp"
 #include "ParticleType.hpp"
 #include "PostEffect.hpp"
 #include "SoundNode.hpp"
+#include "TileNode.hpp"
 #include "Utility.hpp"
 
 World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolder& fonts, SoundPlayer& sounds, Camera& camera, bool networked)
@@ -18,7 +20,8 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	, m_camera(camera)
 	, m_scene_layers()
 	, m_scenegraph(m_scene_layers)
-	, m_world_bounds(0.f, 0.f, 1024.f * 2, 1024.f * 2)
+	, m_tile_size(64)
+	, m_world_bounds(0.f, 0.f, m_tile_size * 52.f, m_tile_size * 24.f)
 	, m_spawn_position(20, 100)
 	, m_networked_world(networked)
 	, m_network_node(nullptr)
@@ -28,7 +31,7 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 
 	m_camera.SetCenter(m_spawn_position);
 	//m_camera.SetSize(384 * 1.5f, 216 * 1.5f);
-	m_camera.SetSize(640, 360);
+	//m_camera.SetSize(640, 360);
 	m_camera.SetBoundsConstraint(m_world_bounds);
 
 	BuildScene();
@@ -62,7 +65,7 @@ void World::Draw()
 {
 	if (PostEffect::IsSupported())
 	{
-		m_scene_texture.clear();
+		m_scene_texture.clear(sf::Color(150, 150, 150, 255));
 		m_scene_texture.setView(m_camera.GetView());
 		m_scene_texture.draw(m_scenegraph);
 		m_scene_texture.display();
@@ -133,12 +136,13 @@ PlayerObject* World::AddPlayer(int identifier)
 	std::unique_ptr<PlayerObject> player(
 		new PlayerObject(
 			m_scene_layers,
-			PlatformerCharacterType::kBruno,
+			PlatformerCharacterType::kDoc,
 			m_camera,
 			m_textures,
 			m_fonts,
 			m_sounds));
 
+	player->setScale(0.5f, 0.5f);
 	player->setPosition(m_camera.GetCenter());
 	player->SetIdentifier(identifier);
 
@@ -157,22 +161,110 @@ void World::BuildScene()
 	//Initialize the different layers
 	for (std::size_t i = 0; i < static_cast<int>(Layers::kLayerCount); ++i)
 	{
-		Category::Type category = i == static_cast<int>(Layers::kAir)
-			? Category::Type::kScene
-			: Category::Type::kNone;
-
-		SceneNode::Ptr layer(new SceneNode(m_scene_layers, category));
+		SceneNode::Ptr layer(new SceneNode(m_scene_layers));
 		m_scene_layers[i] = layer.get();
 		m_scenegraph.AttachChild(std::move(layer));
 	}
 
+	const int map[][50] =
+	{
+		{0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,9,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,1,4,4,4,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0},
+		{0,0,2,2,2,2,2,2,2,2,2,2,2,3,0,0,1,4,4,4,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0},
+		{1,2,4,4,4,4,4,4,4,4,4,4,4,5,0,0,9,4,4,4,4,4,4,3,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,4,2,2,2,2,2,2,2,3},
+		{9,4,4,4,4,4,4,4,4,4,4,4,4,5,0,0,6,7,7,7,7,7,4,4,3,0,0,0,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,4,4,4,4,5},
+		{6,7,7,7,7,7,7,7,7,7,7,7,7,8,0,0,0,0,0,0,0,0,9,4,5,0,0,0,0,0,0,0,0,1,2,4,7,7,7,7,7,7,7,7,7,7,7,7,7,5},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,7,4,3,0,0,0,0,0,0,0,9,4,8,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,2,2,2,2,2,2,2,7,7,0,0,0,0,0,0,0,0,0,0,0,0,7,7,8},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,2,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,4,3,0,0,0,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,2,0,0,9,0,0,0,0,9,5,0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,7,0,0,9,0,0,0,0,9,5,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,9,0,0,0,0,9,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+	};
+
+	for (int i = 0; i < 15; i++)
+	{
+		for (int j = 0; j < 50; j++)
+		{
+			Textures texture_id = Textures::kDefault;
+			bool skip = false;
+
+			switch (map[i][j])
+			{
+			case 0:
+				skip = true;
+				break;
+
+			case 1:
+				texture_id = Textures::kDirt1;
+				break;
+
+			case 2:
+				texture_id = Textures::kDirt2;
+				break;
+
+			case 3:
+				texture_id = Textures::kDirt3;
+				break;
+
+			case 4:
+				texture_id = Textures::kDirt5;
+				break;
+
+			case 5:
+				texture_id = Textures::kDirt6;
+				break;
+
+			case 6:
+				texture_id = Textures::kDirt7;
+				break;
+
+			case 7:
+				texture_id = Textures::kDirt8;
+				break;
+
+			case 8:
+				texture_id = Textures::kDirt9;
+				break;
+
+			case 9:
+				texture_id = Textures::kDirt4;
+				break;
+
+			default:
+				texture_id = Textures::kDefault;
+			}
+
+			if (!skip)
+			{
+				sf::Texture& texture = m_textures.Get(texture_id);
+				std::unique_ptr<TileNode> tile(
+					new TileNode(
+						m_scene_layers,
+						texture));
+
+				tile->setScale(0.5, 0.5);
+				tile->setPosition(
+					m_tile_size + j * m_tile_size,
+					(m_world_bounds.height - m_tile_size * 17) + i * m_tile_size
+				);
+
+				m_scene_layers[static_cast<int>(Layers::kPlatforms)]->AttachChild(std::move(tile));
+			}
+
+		}
+	}
+
 	//Prepare the background
-	sf::Texture& nebula = m_textures.Get(Textures::kBlueNebula);
-	nebula.setRepeated(true);
+	//sf::Texture& nebula = m_textures.Get(Textures::kBlueNebula);
+	//nebula.setRepeated(true);
 
 	//Add the background sprite to our scene
-	std::unique_ptr<SpriteNode> nebula_sprite(new SpriteNode(m_scene_layers, nebula, GetBackgroundRect(nebula)));
-	m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(nebula_sprite));
+	//std::unique_ptr<SpriteNode> nebula_sprite(new SpriteNode(m_scene_layers, nebula, GetBackgroundRect(nebula)));
+	//m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(nebula_sprite));
 
 	if (m_networked_world)
 	{

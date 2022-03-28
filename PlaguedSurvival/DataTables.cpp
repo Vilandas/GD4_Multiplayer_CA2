@@ -19,6 +19,19 @@ std::vector<PlatformerCharacterData> InitializePlatformerCharacterData()
 		{Textures::kBrunoIdle, 19, 34, 9, 1}
 	};
 
+	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_jump_force = 400;
+	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_acceleration = 1000;
+	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_max_velocity = sf::Vector2f(300, 2000);
+	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_deceleration = 4000;
+	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_gravity = 200;
+	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_coyote_time = 0.5f;
+	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_health = 100;
+	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_animation_data = PlatformerAnimationData{
+		{Textures::kDocIdle, 190, 256, 10, 1},
+		{Textures::kDocRun, 256, 256, 4, 1},
+		{Textures::kDocIdle, 190, 256, 10, 1}
+	};
+
 	return data;
 }
 

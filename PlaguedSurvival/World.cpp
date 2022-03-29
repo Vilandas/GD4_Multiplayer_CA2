@@ -121,26 +121,18 @@ PlayerObject* World::GetPlayer(int identifier) const
 	return nullptr;
 }
 
-void World::RemovePlayer(int identifier)
-{
-	PlayerObject* player = GetPlayer(identifier);
-	if (player)
-	{
-		player->Destroy();
-		m_player_characters.erase(std::find(m_player_characters.begin(), m_player_characters.end(), player));
-	}
-}
-
-PlayerObject* World::AddPlayer(int identifier)
+PlayerObject* World::AddPlayer(int identifier, bool is_camera_target)
 {
 	std::unique_ptr<PlayerObject> player(
 		new PlayerObject(
 			m_scene_layers,
 			PlatformerCharacterType::kDoc,
-			m_camera,
 			m_textures,
 			m_fonts,
-			m_sounds));
+			m_sounds,
+			m_camera,
+			is_camera_target
+			));
 
 	player->setScale(0.5f, 0.5f);
 	player->setPosition(m_camera.GetCenter());
@@ -149,6 +141,16 @@ PlayerObject* World::AddPlayer(int identifier)
 	m_player_characters.emplace_back(player.get());
 	m_scene_layers[static_cast<int>(Layers::kPlayers)]->AttachChild(std::move(player));
 	return m_player_characters.back();
+}
+
+void World::RemovePlayer(int identifier)
+{
+	PlayerObject* player = GetPlayer(identifier);
+	if (player)
+	{
+		player->Destroy();
+		m_player_characters.erase(std::find(m_player_characters.begin(), m_player_characters.end(), player));
+	}
 }
 
 bool World::PollGameAction(GameActions::Action& out)

@@ -16,10 +16,11 @@ public:
 	PlatformerCharacter(
 		const SceneLayers& scene_layers,
 		PlatformerCharacterType type,
-		Camera& camera,
 		const TextureHolder& textures,
 		const FontHolder& fonts,
-		SoundPlayer& sounds);
+		SoundPlayer& sounds,
+		Camera& camera,
+		bool is_camera_target = true);
 
 	unsigned GetCategory() const override;
 	sf::FloatRect GetBoundingRect() const override;
@@ -47,8 +48,9 @@ private:
 	Camera& m_camera;
 	AnimatedSpriteArtist m_artist;
 	SoundPlayer& m_sounds;
-	bool m_jumping;
-	bool m_camera_move_constraint;
 	float m_coyote_time;
 	float m_air_time;
+	bool m_jumping;
+	bool m_camera_move_constraint;
+	bool m_is_camera_target;
 };

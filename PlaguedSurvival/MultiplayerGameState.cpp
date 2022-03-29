@@ -363,7 +363,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 player_identifier;
 		sf::Vector2f player_position;
 		packet >> player_identifier >> player_position.x >> player_position.y;
-		PlayerObject* player = m_world.AddPlayer(player_identifier);
+		PlayerObject* player = m_world.AddPlayer(player_identifier, true);
 		player->setPosition(player_position);
 		m_players[player_identifier].reset(new Player(&m_socket, player_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(player_identifier);
@@ -377,7 +377,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Vector2f player_position;
 		packet >> player_identifier >> player_position.x >> player_position.y;
 
-		PlayerObject* player = m_world.AddPlayer(player_identifier);
+		PlayerObject* player = m_world.AddPlayer(player_identifier, false);
 		player->setPosition(player_position);
 		m_players[player_identifier].reset(new Player(&m_socket, player_identifier, nullptr));
 	}
@@ -406,7 +406,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 				>> player_position.y
 				>> hitpoints;
 
-			PlayerObject* player = m_world.AddPlayer(player_identifier);
+			PlayerObject* player = m_world.AddPlayer(player_identifier, false);
 			player->setPosition(player_position);
 			//player->SetHitpoints(hitpoints);
 			//player->SetMissileAmmo(missile_ammo);
@@ -421,7 +421,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 player_identifier;
 		packet >> player_identifier;
 
-		m_world.AddPlayer(player_identifier);
+		m_world.AddPlayer(player_identifier, false);
 		m_players[player_identifier].reset(new Player(&m_socket, player_identifier, GetContext().keys2));
 		m_local_player_identifiers.emplace_back(player_identifier);
 	}

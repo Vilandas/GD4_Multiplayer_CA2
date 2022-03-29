@@ -1,13 +1,11 @@
 #include "PlatformerCharacter.hpp"
 
+#include <array>
 #include <iostream>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "Collision.hpp"
 #include "DataTables.hpp"
-//#include "PlatformerAnimationState.hpp"
-#include <array>
-
 #include "PlatformerAnimationState.hpp"
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
@@ -23,10 +21,11 @@ namespace
 PlatformerCharacter::PlatformerCharacter(
 	const SceneLayers& scene_layers,
 	PlatformerCharacterType type,
-	Camera& camera,
 	const TextureHolder& textures,
 	const FontHolder& fonts,
-	SoundPlayer& sounds)
+	SoundPlayer& sounds,
+	Camera& camera,
+	bool is_camera_target)
 	: Entity(
 		scene_layers,
 		Table[static_cast<int>(type)].m_health,
@@ -38,10 +37,11 @@ PlatformerCharacter::PlatformerCharacter(
 	, m_camera(camera)
 	, m_artist(Table[static_cast<int>(type)].m_animation_data.ToVector(), textures)
 	, m_sounds(sounds)
-	, m_jumping(false)
-	, m_camera_move_constraint(false)
 	, m_coyote_time(Table[static_cast<int>(type)].m_coyote_time)
 	, m_air_time(0)
+	, m_jumping(false)
+	, m_camera_move_constraint(false)
+	, m_is_camera_target(is_camera_target)
 {
 }
 
@@ -62,14 +62,7 @@ void PlatformerCharacter::Jump()
 		m_jumping = true;
 		const sf::Vector2f velocity = GetVelocity();
 
-		if (velocity.y < 0) // if moving upwards, allow momentum jump
-		{
-			SetVelocity(GetVelocity().x, velocity.y - Table[static_cast<int>(m_type)].m_jump_force);
-		}
-		else
-		{
-			SetVelocity(GetVelocity().x, -Table[static_cast<int>(m_type)].m_jump_force);
-		}
+		SetVelocity(GetVelocity().x, -Table[static_cast<int>(m_type)].m_jump_force);
 	}
 }
 
@@ -108,10 +101,6 @@ void PlatformerCharacter::HandleCollisions()
 	}
 }
 
-/// <summary>
-/// Vilandas
-/// </summary>
-/// <param name="location"></param>
 void PlatformerCharacter::BlockingCollision(CollisionLocation location)
 {
 	const sf::Vector2f velocity = GetVelocity();
@@ -204,6 +193,8 @@ void PlatformerCharacter::UpdateAnimationState()
 
 void PlatformerCharacter::UpdateCamera(sf::Time dt)
 {
+	if (!m_is_camera_target) return;
+
 	const sf::Vector2f distance = getPosition() - m_camera.GetCenter();
 
 	if (m_camera_move_constraint || Utility::Length(distance) > 100)

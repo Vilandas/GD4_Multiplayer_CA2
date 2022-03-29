@@ -144,7 +144,6 @@ void PlatformerCharacter::BlockingCollision(CollisionLocation location)
 
 void PlatformerCharacter::ApplyGravity(sf::Time dt)
 {
-	std::cout << GetVelocity().y << std::endl;
 	if (GetVelocity().y > -300)
 	{
 		Entity::ApplyGravity(sf::seconds(dt.asSeconds() * 4));
@@ -201,7 +200,7 @@ void PlatformerCharacter::UpdateCamera(sf::Time dt)
 	{
 		m_camera_move_constraint = true;
 
-		const sf::Vector2f new_position = distance * 0.01f;
+		const sf::Vector2f new_position = distance * 0.02f;
 		m_camera.SetCenter(m_camera.GetCenter() + new_position);
 
 		if (Utility::Length(new_position) <= 0.2f)

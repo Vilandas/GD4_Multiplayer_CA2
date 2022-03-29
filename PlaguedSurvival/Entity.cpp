@@ -1,7 +1,5 @@
 #include "Entity.hpp"
 
-#include <iostream>
-
 #include "Utility.hpp"
 
 
@@ -155,11 +153,6 @@ void Entity::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 
 	ValidateVelocity();
 	HandleCollisions();
-
-	if (getPosition().y > 200)
-	{
-		//setPosition(getPosition().x, 200);
-	}
 
 	move(m_velocity * dt.asSeconds());
 }

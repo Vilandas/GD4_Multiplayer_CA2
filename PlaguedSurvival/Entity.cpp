@@ -269,6 +269,11 @@ void Entity::UpdateDirectionUnit()
 	m_direction_unit = Utility::UnitVector(new_direction);
 }
 
+void Entity::OnDamage()
+{
+	// Do Nothing
+}
+
 int Entity::GetHitPoints() const
 {
 	return m_hitpoints;
@@ -294,6 +299,13 @@ void Entity::Damage(int points)
 {
 	assert(points > 0);
 	m_hitpoints -= points;
+
+	if (m_hitpoints < 0)
+	{
+		m_hitpoints = 0;
+	}
+
+	OnDamage();
 }
 
 void Entity::Destroy()

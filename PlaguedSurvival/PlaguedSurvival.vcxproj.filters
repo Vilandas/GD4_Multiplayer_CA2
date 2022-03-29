@@ -165,6 +165,9 @@
     <ClCompile Include="TileNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
+    <ClCompile Include="DangerTrigger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ResourceHolder.hpp">
@@ -358,6 +361,12 @@
     </ClInclude>
     <ClInclude Include="TileNode.hpp">
       <Filter>Header Files\Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="DangerTrigger.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dangerous.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

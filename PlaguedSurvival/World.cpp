@@ -2,7 +2,6 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <iostream>
-#include <limits>
 #include <SFML/Graphics/RectangleShape.hpp>
 
 #include "ParticleNode.hpp"
@@ -26,6 +25,7 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	, m_networked_world(networked)
 	, m_network_node(nullptr)
 	, m_finish_sprite(nullptr)
+	, m_elapsed_time()
 {
 	m_scene_texture.create(m_window.getSize().x, m_window.getSize().y);
 
@@ -34,11 +34,16 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	//m_camera.SetSize(640, 360);
 	m_camera.SetBoundsConstraint(m_world_bounds);
 
+	DangerTrigger::Instance().Clear();
 	BuildScene();
 }
 
 void World::Update(sf::Time dt)
 {
+	m_elapsed_time += dt.asSeconds();
+
+	DangerTrigger::Instance().Update(dt);
+
 	//Forward commands to the scenegraph until the command queue is empty
 	while (!m_command_queue.IsEmpty())
 	{
@@ -187,6 +192,8 @@ void World::BuildScene()
 		{0,0,0,0,0,9,0,0,0,0,9,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	};
 
+	std::unordered_map<int, TileNode*> top_tiles(50);
+
 	for (int i = 0; i < 15; i++)
 	{
 		for (int j = 0; j < 50; j++)
@@ -253,6 +260,16 @@ void World::BuildScene()
 					m_tile_size + j * m_tile_size,
 					(m_world_bounds.height - m_tile_size * 17) + i * m_tile_size
 				);
+
+				const auto result = top_tiles.emplace(j, tile.get());
+				if (result.second)
+				{
+					tile->SetIsTop();
+				}
+				else
+				{
+					top_tiles[j]->AddBelowTile(tile.get());
+				}
 
 				m_scene_layers[static_cast<int>(Layers::kPlatforms)]->AttachChild(std::move(tile));
 			}

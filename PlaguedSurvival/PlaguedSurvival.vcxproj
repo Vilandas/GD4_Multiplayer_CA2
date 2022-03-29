@@ -162,6 +162,7 @@
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Container.cpp" />
+    <ClCompile Include="DangerTrigger.cpp" />
     <ClCompile Include="DataTables.cpp" />
     <ClCompile Include="EmitterNode.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="CommandQueue.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="Container.hpp" />
+    <ClInclude Include="Dangerous.hpp" />
     <ClInclude Include="DataTables.hpp" />
     <ClInclude Include="EmitterNode.hpp" />
     <ClInclude Include="Entity.hpp" />
@@ -217,6 +219,7 @@
     <ClInclude Include="GameOverState.hpp" />
     <ClInclude Include="GameServer.hpp" />
     <ClInclude Include="GameState.hpp" />
+    <ClInclude Include="DangerTrigger.hpp" />
     <ClInclude Include="KeyBinding.hpp" />
     <ClInclude Include="Label.hpp" />
     <ClInclude Include="Layers.hpp" />

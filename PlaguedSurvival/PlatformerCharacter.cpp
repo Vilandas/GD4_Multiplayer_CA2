@@ -1,7 +1,6 @@
 #include "PlatformerCharacter.hpp"
 
 #include <array>
-#include <iostream>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "Collision.hpp"

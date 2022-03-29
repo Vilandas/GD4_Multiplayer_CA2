@@ -48,6 +48,9 @@ protected:
 	virtual void UpdateDirectionUnit();
 
 private:
+	virtual void OnDamage();
+
+private:
 	int m_hitpoints;
 	float m_acceleration_speed;
 	sf::Vector2f m_max_velocity;

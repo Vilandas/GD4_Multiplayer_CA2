@@ -82,12 +82,10 @@ private:
 	sf::Vector2f m_spawn_position;
 	std::vector<PlayerObject*> m_player_characters;
 
-	//std::vector<Aircraft*> m_player_aircraft;
-	//std::vector<SpawnPoint> m_enemy_spawn_points;
-	//std::vector<Aircraft*>	m_active_enemies;
-
 	BloomEffect m_bloom_effect;
 	bool m_networked_world;
 	NetworkNode* m_network_node;
 	SpriteNode* m_finish_sprite;
+
+	float m_elapsed_time;
 };

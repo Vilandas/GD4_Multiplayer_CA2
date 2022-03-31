@@ -394,8 +394,12 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 
 	case Server::PacketType::InitialState:
 	{
+		sf::Uint32 seed;
 		sf::Int32 player_count;
-		packet >> player_count;
+		packet >> seed
+			>> player_count;
+
+		Utility::UpdateRandomEngine(seed);
 		for (sf::Int32 i = 0; i < player_count; ++i)
 		{
 			sf::Int32 player_identifier;

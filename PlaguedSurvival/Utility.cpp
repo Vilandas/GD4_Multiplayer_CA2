@@ -11,13 +11,18 @@
 
 namespace
 {
-	std::default_random_engine CreateRandomEngine()
+	unsigned long GenerateSeed()
 	{
-		const auto seed = static_cast<unsigned long>(std::time(nullptr));
+		return static_cast<unsigned long>(std::time(nullptr));
+	}
+
+	std::default_random_engine CreateRandomEngine(const unsigned long seed)
+	{
 		return std::default_random_engine(seed);
 	}
 
-	auto RandomEngine = CreateRandomEngine();
+	unsigned long Seed = GenerateSeed();
+	auto RandomEngine = CreateRandomEngine(Seed);
 }
 
 //TODO should we just implement for base class - sf::Transformable?
@@ -208,4 +213,14 @@ int Utility::RandomInt(int exclusive_max)
 {
 	const std::uniform_int_distribution<> distr(0, exclusive_max - 1);
 	return distr(RandomEngine);
+}
+
+unsigned long Utility::GetSeed()
+{
+	return Seed;
+}
+
+void Utility::UpdateRandomEngine(unsigned long seed)
+{
+	RandomEngine = std::default_random_engine(seed);
 }

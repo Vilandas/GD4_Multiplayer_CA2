@@ -457,6 +457,7 @@ void GameServer::InformWorldState(sf::TcpSocket& socket)
 {
 	sf::Packet packet;
 	packet << static_cast<sf::Int32>(Server::PacketType::InitialState)
+	<< static_cast<sf::Uint32>(Utility::GetSeed())
 	<< static_cast<sf::Int32>(m_player_count);
 
 	for (std::size_t i = 0; i < m_connected_players; ++i)

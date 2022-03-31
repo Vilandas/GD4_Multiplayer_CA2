@@ -29,4 +29,7 @@ public:
 	static sf::IntRect GetIntRect(const sf::Texture& texture);
 	static sf::Vector2f GetRectCenter(const sf::FloatRect& rect);
 	static int RandomInt(int exclusive_max);
+
+	static unsigned long GetSeed();
+	static void UpdateRandomEngine(unsigned long seed);
 };

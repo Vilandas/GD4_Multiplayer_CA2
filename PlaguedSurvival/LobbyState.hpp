@@ -1,35 +1,45 @@
 #pragma once
+#include "Container.hpp"
 #include "State.hpp"
 #include "World.hpp"
 #include "Player.hpp"
 #include "GameServer.hpp"
+#include "Label.hpp"
 #include "NetworkProtocol.hpp"
 
-class MultiplayerGameState : public State
+class LobbyState : public State
 {
 public:
-	MultiplayerGameState(StateStack& stack, Context context, bool is_host);
+	LobbyState(StateStack& stack, Context context, bool is_host);
 	void Draw() override;
 	bool Update(sf::Time dt) override;
 	bool HandleEvent(const sf::Event& event) override;
 	void OnActivate() override;
 	void OnDestroy() override;
-	void DisableAllRealtimeActions();
+
+private:
+	struct Player
+	{
+		std::shared_ptr<GUI::Label> m_name;
+	};
 
 private:
 	void UpdateBroadcastMessage(sf::Time elapsed_time);
-	void HandlePacket(sf::Int32 packet_type, sf::Packet& packet);
+	void HandlePacket(opt::ServerPacket packet_type, sf::Packet& packet);
+	void GeneratePlayer(opt::PlayerIdentifier identifier);
+	void GeneratePlayer(opt::PlayerIdentifier identifier, const std::string& name);
 
 private:
-	typedef std::unique_ptr<Player> PlayerPtr;
-
-private:
-	World m_world;
 	sf::RenderWindow& m_window;
 	TextureHolder& m_texture_holder;
+	FontHolder& m_font_holder;
 
-	std::map<int, PlayerPtr> m_players;
-	std::vector<sf::Int32> m_local_player_identifiers;
+	Camera m_camera;
+	GUI::Container m_gui_container;
+	sf::Sprite m_background_sprite;
+
+	std::map<opt::PlayerIdentifier, Player> m_players;
+	std::vector<opt::PlayerIdentifier> m_local_player_identifiers;
 	sf::TcpSocket m_socket;
 	bool m_connected;
 	std::unique_ptr<GameServer> m_game_server;
@@ -48,7 +58,6 @@ private:
 	bool m_active_state;
 	bool m_has_focus;
 	bool m_host;
-	bool m_game_started;
 	sf::Time m_client_timeout;
 	sf::Time m_time_since_last_packet;
 };

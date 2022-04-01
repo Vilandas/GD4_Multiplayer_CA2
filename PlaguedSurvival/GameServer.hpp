@@ -10,14 +10,19 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Thread.hpp>
 
+#include "NetworkOptimisations.hpp"
+
 class GameServer
 {
 public:
-	explicit GameServer(sf::Vector2f battlefield_size);
+	static constexpr int NAME_SIZE = 12;
+
+public:
+	explicit GameServer();
 	~GameServer();
-	void NotifyPlayerSpawn(sf::Int32 player_identifier);
-	void NotifyPlayerRealtimeChange(sf::Int32 player_identifier, sf::Int32 action, bool action_enabled);
-	void NotifyPlayerEvent(sf::Int32 player_identifier, sf::Int32 action);
+	void NotifyPlayerSpawn(opt::PlayerIdentifier player_identifier);
+	void NotifyPlayerRealtimeChange(opt::PlayerIdentifier player_identifier, opt::Action action, bool action_enabled);
+	void NotifyPlayerEvent(opt::PlayerIdentifier player_identifier, opt::Action action);
 
 private:
 	struct RemotePeer
@@ -25,16 +30,17 @@ private:
 		RemotePeer();
 		sf::TcpSocket m_socket;
 		sf::Time m_last_packet_time;
-		std::vector<sf::Int32> m_player_identifiers;
+		std::vector<opt::PlayerIdentifier> m_player_identifiers;
 		bool m_ready;
 		bool m_timed_out;
 	};
 
 	struct PlayerInfo
 	{
+		std::string name;
 		sf::Vector2f m_position;
 		sf::Int32 m_hitpoints;
-		std::map<sf::Int32, bool> m_realtime_actions;
+		std::map<opt::Action, bool> m_realtime_actions;
 	};
 
 	typedef std::unique_ptr<RemotePeer> PeerPtr;
@@ -48,6 +54,7 @@ private:
 	void HandleIncomingPackets();
 	void HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_peer, bool& detected_timeout);
 
+	opt::PlayerIdentifier GetFreeIdentifier() const;
 	void HandleIncomingConnections();
 	void HandleDisconnections();
 
@@ -61,18 +68,16 @@ private:
 	sf::Clock m_clock;
 	sf::TcpListener m_listener_socket;
 	bool m_listening_state;
+	bool m_lobby;
 	sf::Time m_client_timeout;
 
 	std::size_t m_max_connected_players;
 	std::size_t m_connected_players;
 
-	float m_world_height;
-
-	std::size_t m_player_count;
-	std::map<sf::Int32, PlayerInfo> m_player_info;
+	opt::PlayerCount m_player_count;
+	std::map<opt::PlayerIdentifier, PlayerInfo> m_player_info;
 
 	std::vector<PeerPtr> m_peers;
-	sf::Int32 m_player_identifier_counter;
 	bool m_waiting_thread_end;
 
 	sf::Time m_last_spawn_time;

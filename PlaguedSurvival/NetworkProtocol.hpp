@@ -28,6 +28,7 @@ namespace Client
 	//Messages sent from the Client
 	enum class PacketType
 	{
+		StillHereUpdate,
 		PlayerEvent,
 		PlayerRealtimeChange,
 		RequestCoopPartner,

@@ -17,6 +17,7 @@ namespace GUI
 		void DeactivateAllExcept(const Component::Ptr& exception) const;
 		void DeactivateAll() const;
 		bool Pack(const Component::Ptr& component);
+		void Unpack(const Component::Ptr& component);
 
 		bool IsSelectable() const override;
 		void HandleEvent(const sf::Event& event) override;

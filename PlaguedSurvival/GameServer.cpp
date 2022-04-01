@@ -1,4 +1,7 @@
 #include "GameServer.hpp"
+
+#include <iostream>
+
 #include "NetworkProtocol.hpp"
 #include <SFML/System.hpp>
 
@@ -15,16 +18,15 @@ GameServer::RemotePeer::RemotePeer() :m_ready(false), m_timed_out(false)
 	m_socket.setBlocking(false);
 }
 
-GameServer::GameServer(sf::Vector2f battlefield_size)
+GameServer::GameServer()
 	: m_thread(&GameServer::ExecutionThread, this)
 	, m_listening_state(false)
+	, m_lobby(true)
 	, m_client_timeout(sf::seconds(1.f))
 	, m_max_connected_players(15)
 	, m_connected_players(0)
-	, m_world_height(5000.f)
 	, m_player_count(0)
 	, m_peers(1)
-	, m_player_identifier_counter(1)
 	, m_waiting_thread_end(false)
 	, m_last_spawn_time(sf::Time::Zero)
 	, m_time_for_next_spawn(sf::seconds(5.f))
@@ -42,11 +44,11 @@ GameServer::~GameServer()
 
 //This is the same as SpawnSelf but indicate that a player from a different client is entering the world
 
-void GameServer::NotifyPlayerSpawn(sf::Int32 player_identifier)
+void GameServer::NotifyPlayerSpawn(opt::PlayerIdentifier player_identifier)
 {
 	sf::Packet packet;
 	//First thing for every packet is what type of packet it is
-	packet << static_cast<sf::Int32>(Server::PacketType::PlayerConnect);
+	packet << static_cast<opt::ServerPacket>(Server::PacketType::PlayerConnect);
 	packet << player_identifier << m_player_info[player_identifier].m_position.x << m_player_info[player_identifier].m_position.y;
 	for (std::size_t i = 0; i < m_connected_players; ++i)
 	{
@@ -59,11 +61,11 @@ void GameServer::NotifyPlayerSpawn(sf::Int32 player_identifier)
 
 //This is the same as PlayerEvent, but for real-time actions. This means that we are changing an ongoing state to either true or false, so we add a Boolean value to the parameters
 
-void GameServer::NotifyPlayerRealtimeChange(sf::Int32 player_identifier, sf::Int32 action, bool action_enabled)
+void GameServer::NotifyPlayerRealtimeChange(opt::PlayerIdentifier player_identifier, opt::Action action, bool action_enabled)
 {
 	sf::Packet packet;
 	//First thing for every packet is what type of packet it is
-	packet << static_cast<sf::Int32>(Server::PacketType::PlayerRealtimeChange);
+	packet << static_cast<opt::ServerPacket>(Server::PacketType::PlayerRealtimeChange);
 	packet << player_identifier;
 	packet << action;
 	packet << action_enabled;
@@ -81,11 +83,11 @@ void GameServer::NotifyPlayerRealtimeChange(sf::Int32 player_identifier, sf::Int
 //as declared in the Player class. This is used to inform all peers that plane X has
 //triggered an action
 
-void GameServer::NotifyPlayerEvent(sf::Int32 player_identifier, sf::Int32 action)
+void GameServer::NotifyPlayerEvent(opt::PlayerIdentifier player_identifier, opt::Action action)
 {
 	sf::Packet packet;
 	//First thing for every packet is what type of packet it is
-	packet << static_cast<sf::Int32>(Server::PacketType::PlayerEvent);
+	packet << static_cast<opt::ServerPacket>(Server::PacketType::PlayerEvent);
 	packet << player_identifier;
 	packet << action;
 
@@ -268,7 +270,7 @@ void GameServer::HandleIncomingPackets()
 
 void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_peer, bool& detected_timeout)
 {
-	sf::Int32 packet_type;
+	opt::ClientPacket packet_type;
 	packet >> packet_type;
 
 	switch (static_cast<Client::PacketType> (packet_type))
@@ -282,8 +284,8 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 
 	case Client::PacketType::PlayerEvent:
 	{
-		sf::Int32 player_identifier;
-		sf::Int32 action;
+		opt::PlayerIdentifier player_identifier;
+		opt::Action action;
 		packet >> player_identifier >> action;
 		NotifyPlayerEvent(player_identifier, action);
 	}
@@ -291,8 +293,8 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 
 	case Client::PacketType::PlayerRealtimeChange:
 	{
-		sf::Int32 player_identifier;
-		sf::Int32 action;
+		opt::PlayerIdentifier player_identifier;
+		opt::Action action;
 		bool action_enabled;
 		packet >> player_identifier >> action >> action_enabled;
 		NotifyPlayerRealtimeChange(player_identifier, action, action_enabled);
@@ -301,25 +303,24 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 
 	case Client::PacketType::RequestCoopPartner:
 	{
-		receiving_peer.m_player_identifiers.emplace_back(m_player_identifier_counter);
-		m_player_info[m_player_identifier_counter].m_position = sf::Vector2f(0, 0);
-		m_player_info[m_player_identifier_counter].m_hitpoints = 100;
+		opt::PlayerIdentifier identifier = GetFreeIdentifier();
+		receiving_peer.m_player_identifiers.emplace_back(identifier);
+
+		m_player_info[identifier].name = std::to_string(identifier);
+		m_player_info[identifier].m_position = sf::Vector2f(0, 0);
+		m_player_info[identifier].m_hitpoints = 100;
 
 		sf::Packet request_packet;
-		request_packet << static_cast<sf::Int32>(Server::PacketType::AcceptCoopPartner);
-		request_packet << m_player_identifier_counter;
-		request_packet << m_player_info[m_player_identifier_counter].m_position.x;
-		request_packet << m_player_info[m_player_identifier_counter].m_position.y;
+		request_packet << static_cast<opt::ServerPacket>(Server::PacketType::AcceptCoopPartner);
+		request_packet << identifier;
 
 		receiving_peer.m_socket.send(request_packet);
 		m_player_count++;
 
-		// Tell everyone else about the new plane
+		// Tell everyone else about the new player
 		sf::Packet notify_packet;
-		notify_packet << static_cast<sf::Int32>(Server::PacketType::PlayerConnect);
-		notify_packet << m_player_identifier_counter;
-		notify_packet << m_player_info[m_player_identifier_counter].m_position.x;
-		notify_packet << m_player_info[m_player_identifier_counter].m_position.y;
+		notify_packet << static_cast<opt::ServerPacket>(Server::PacketType::PlayerConnect);
+		notify_packet << identifier;
 
 		for (PeerPtr& peer : m_peers)
 		{
@@ -328,19 +329,24 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 				peer->m_socket.send(notify_packet);
 			}
 		}
+	}
+	break;
 
-		m_player_identifier_counter++;
+	case Client::PacketType::StillHereUpdate:
+	{
+		opt::PlayerIdentifier player_identifier;
+		packet >> player_identifier;
 	}
 	break;
 
 	case Client::PacketType::PositionUpdate:
 	{
-		sf::Int32 player_count;
+		opt::PlayerCount player_count;
 		packet >> player_count;
 
-		for (sf::Int32 i = 0; i < player_count; ++i)
+		for (opt::PlayerCount i = 0; i < player_count; ++i)
 		{
-			sf::Int32 player_identifier;
+			opt::PlayerIdentifier player_identifier;
 			sf::Int32 player_hitpoints;
 			sf::Vector2f player_position;
 			packet >> player_identifier >> player_position.x >> player_position.y >> player_hitpoints;
@@ -352,7 +358,7 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 
 	case Client::PacketType::GameEvent:
 	{
-		sf::Int32 action;
+		opt::Action action;
 		float x;
 		float y;
 
@@ -365,7 +371,7 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		if (action == GameActions::EnemyExplode && Utility::RandomInt(3) == 0 && &receiving_peer == m_peers[0].get())
 		{
 			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup);
+			packet << static_cast<opt::ServerPacket>(Server::PacketType::SpawnPickup);
 			packet << static_cast<sf::Int32>(Utility::RandomInt(static_cast<int>(PickupType::kPickupCount)));
 			packet << x;
 			packet << y;
@@ -373,6 +379,23 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 			SendToAll(packet);
 		}
 	}
+	}
+}
+
+opt::PlayerIdentifier GameServer::GetFreeIdentifier() const
+{
+	opt::PlayerIdentifier identifier = 1;
+
+	while (true)
+	{
+		if (m_player_info.count(identifier))
+		{
+			identifier++;
+		}
+		else
+		{
+			return identifier;
+		}
 	}
 }
 
@@ -385,21 +408,23 @@ void GameServer::HandleIncomingConnections()
 
 	if (m_listener_socket.accept(m_peers[m_connected_players]->m_socket) == sf::TcpListener::Done)
 	{
+		const opt::PlayerIdentifier identifier = GetFreeIdentifier();
+
 		//Order the new client to spawn its player 1
-		m_player_info[m_player_identifier_counter].m_position = sf::Vector2f(0, 0);
-		m_player_info[m_player_identifier_counter].m_hitpoints = 100;
+		m_player_info[identifier].name = std::to_string(identifier);
+		m_player_info[identifier].m_position = sf::Vector2f(0, 0);
+		m_player_info[identifier].m_hitpoints = 100;
+
 
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::SpawnSelf);
-		packet << m_player_identifier_counter;
-		packet << m_player_info[m_player_identifier_counter].m_position.x;
-		packet << m_player_info[m_player_identifier_counter].m_position.y;
+		packet << static_cast<opt::ServerPacket>(Server::PacketType::SpawnSelf);
+		packet << identifier;
 
-		m_peers[m_connected_players]->m_player_identifiers.emplace_back(m_player_identifier_counter);
+		m_peers[m_connected_players]->m_player_identifiers.emplace_back(identifier);
 
 		BroadcastMessage("New player");
 		InformWorldState(m_peers[m_connected_players]->m_socket);
-		NotifyPlayerSpawn(m_player_identifier_counter++);
+		NotifyPlayerSpawn(identifier);
 
 		m_peers[m_connected_players]->m_socket.send(packet);
 		m_peers[m_connected_players]->m_ready = true;
@@ -426,10 +451,10 @@ void GameServer::HandleDisconnections()
 		if ((*itr)->m_timed_out)
 		{
 			//Inform everyone of a disconnection, erase
-			for (sf::Int32 identifer : (*itr)->m_player_identifiers)
+			for (opt::PlayerIdentifier identifier : (*itr)->m_player_identifiers)
 			{
-				SendToAll((sf::Packet() << static_cast<sf::Int32>(Server::PacketType::PlayerDisconnect) << identifer));
-				m_player_info.erase(identifer);
+				SendToAll((sf::Packet() << static_cast<opt::ServerPacket>(Server::PacketType::PlayerDisconnect) << identifier));
+				m_player_info.erase(identifier);
 			}
 
 			m_connected_players--;
@@ -456,20 +481,18 @@ void GameServer::HandleDisconnections()
 void GameServer::InformWorldState(sf::TcpSocket& socket)
 {
 	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Server::PacketType::InitialState)
+	packet << static_cast<opt::ServerPacket>(Server::PacketType::InitialState)
 	<< static_cast<sf::Uint32>(Utility::GetSeed())
-	<< static_cast<sf::Int32>(m_player_count);
+	<< static_cast<opt::PlayerCount>(m_player_count);
 
 	for (std::size_t i = 0; i < m_connected_players; ++i)
 	{
 		if (m_peers[i]->m_ready)
 		{
-			for (sf::Int32 identifier : m_peers[i]->m_player_identifiers)
+			for (opt::PlayerIdentifier identifier : m_peers[i]->m_player_identifiers)
 			{
 				packet << identifier
-				<< m_player_info[identifier].m_position.x
-				<< m_player_info[identifier].m_position.y
-				<< m_player_info[identifier].m_hitpoints;
+					<< m_player_info[identifier].name;
 			}
 		}
 	}
@@ -480,7 +503,7 @@ void GameServer::InformWorldState(sf::TcpSocket& socket)
 void GameServer::BroadcastMessage(const std::string& message)
 {
 	sf::Packet packet;
-	packet << static_cast<sf::Int32>(Server::PacketType::BroadcastMessage);
+	packet << static_cast<opt::ServerPacket>(Server::PacketType::BroadcastMessage);
 	packet << message;
 	for (std::size_t i = 0; i < m_connected_players; ++i)
 	{
@@ -505,12 +528,16 @@ void GameServer::SendToAll(sf::Packet& packet)
 void GameServer::UpdateClientState()
 {
 	sf::Packet update_client_state_packet;
-	update_client_state_packet << static_cast<sf::Int32>(Server::PacketType::UpdateClientState);
-	update_client_state_packet << static_cast<sf::Int32>(m_player_count);
+	update_client_state_packet << static_cast<opt::ServerPacket>(Server::PacketType::UpdateClientState);
 
-	for (const auto& player : m_player_info)
+	if (!m_lobby)
 	{
-		update_client_state_packet << player.first << player.second.m_position.x << player.second.m_position.y << player.second.m_hitpoints;
+		update_client_state_packet << static_cast<opt::PlayerCount>(m_player_count);
+
+		for (const auto& player : m_player_info)
+		{
+			update_client_state_packet << player.first << player.second.m_position.x << player.second.m_position.y << player.second.m_hitpoints;
+		}
 	}
 
 	SendToAll(update_client_state_packet);

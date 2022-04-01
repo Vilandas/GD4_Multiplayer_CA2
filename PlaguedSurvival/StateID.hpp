@@ -11,5 +11,7 @@ enum class StateID
 	kNetworkPause,
 	kMissionSuccess,
 	kHostGame,
-	kJoinGame
+	kHostLobby,
+	kJoinGame,
+	kJoinLobby,
 };

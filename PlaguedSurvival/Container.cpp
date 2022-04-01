@@ -44,6 +44,11 @@ namespace GUI
 		return true;
 	}
 
+	void Container::Unpack(const Component::Ptr& component)
+	{
+		m_children.erase(std::remove(m_children.begin(), m_children.end(), component), m_children.end());
+	}
+
 	bool Container::IsSelectable() const
 	{
 		return false;

@@ -8,12 +8,13 @@
 
 #include "CommandQueue.hpp"
 #include "MissionStatus.hpp"
+#include "NetworkOptimisations.hpp"
 #include "PlayerAction.hpp"
 
 class Player
 {
 public:
-	Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding);
+	Player(sf::TcpSocket* socket, opt::PlayerIdentifier identifier, const KeyBinding* binding);
 	void HandleEvent(const sf::Event& event, CommandQueue& commands);
 	void HandleRealtimeInput(CommandQueue& commands);
 	void HandleRealtimeNetworkInput(CommandQueue& commands);
@@ -38,6 +39,6 @@ private:
 	std::map<PlayerAction, bool> m_action_proxies;
 	std::unordered_set<PlayerAction> m_active_actions;
 	MissionStatus m_current_mission_status;
-	int m_identifier;
+	opt::PlayerIdentifier m_identifier;
 	sf::TcpSocket* m_socket;
 };

@@ -148,7 +148,7 @@ PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_
 	return m_player_characters.back();
 }
 
-void World::RemovePlayer(int identifier)
+void World::RemovePlayer(opt::PlayerIdentifier identifier)
 {
 	PlayerObject* player = GetPlayer(identifier);
 	if (player)

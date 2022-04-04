@@ -173,7 +173,7 @@ void MultiplayerGameState::UpdateLobby(sf::Time dt)
 		sf::Packet update_packet;
 		update_packet << static_cast<opt::ClientPacket>(Client::PacketType::StillHereUpdate);
 
-		for (const sf::Int32 identifier : m_local_player_identifiers)
+		for (const opt::PlayerIdentifier identifier : m_local_player_identifiers)
 		{
 			update_packet << identifier;
 		}
@@ -311,7 +311,7 @@ bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 		if (event.key.code == sf::Keyboard::Return && m_local_player_identifiers.size() == 1)
 		{
 			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Client::PacketType::RequestCoopPartner);
+			packet << static_cast<opt::ClientPacket>(Client::PacketType::RequestCoopPartner);
 			m_socket.send(packet);
 		}
 	}
@@ -352,7 +352,7 @@ bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 void MultiplayerGameState::DisableAllRealtimeActions()
 {
 	m_active_state = false;
-	for (sf::Int32 identifier : m_local_player_identifiers)
+	for (opt::PlayerIdentifier identifier : m_local_player_identifiers)
 	{
 		m_players[identifier].m_player->DisableAllRealtimeActions();
 	}
@@ -495,8 +495,8 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 		//Player's movement or fire keyboard state changes
 		case Server::PacketType::PlayerRealtimeChange:
 		{
-			sf::Int32 player_identifier;
-			sf::Int32 action;
+			opt::PlayerIdentifier player_identifier;
+			opt::Action action;
 			bool action_enabled;
 			packet >> player_identifier >> action >> action_enabled;
 			auto itr = m_players.find(player_identifier);
@@ -510,8 +510,8 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 		//Player event, like missile fired occurs
 		case Server::PacketType::PlayerEvent:
 		{
-			sf::Int32 player_identifier;
-			sf::Int32 action;
+			opt::PlayerIdentifier player_identifier;
+			opt::Action action;
 			packet >> player_identifier >> action;
 			auto itr = m_players.find(player_identifier);
 			if (itr != m_players.end())

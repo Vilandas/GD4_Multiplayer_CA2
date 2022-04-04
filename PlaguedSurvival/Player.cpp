@@ -8,7 +8,7 @@ class Entity;
 
 struct EntityDirectionAdder
 {
-	EntityDirectionAdder(int vx, int vy, int identifier)
+	EntityDirectionAdder(int vx, int vy, opt::PlayerIdentifier identifier)
 		: velocity(vx, vy)
 		, identifier(identifier)
 	{
@@ -23,12 +23,12 @@ struct EntityDirectionAdder
 	}
 
 	sf::Vector2i velocity;
-	int identifier;
+	opt::PlayerIdentifier identifier;
 };
 
 struct EntityDirectionRemover
 {
-	EntityDirectionRemover(int vx, int vy, int identifier)
+	EntityDirectionRemover(int vx, int vy, opt::PlayerIdentifier identifier)
 		: velocity(vx, vy)
 		, identifier(identifier)
 	{
@@ -43,12 +43,12 @@ struct EntityDirectionRemover
 	}
 
 	sf::Vector2i velocity;
-	int identifier;
+	opt::PlayerIdentifier identifier;
 };
 
 struct PlatformerJump
 {
-	PlatformerJump(const int identifier)
+	PlatformerJump(const opt::PlayerIdentifier identifier)
 		: identifier(identifier)
 	{
 	}
@@ -61,10 +61,10 @@ struct PlatformerJump
 		}
 	}
 
-	int identifier;
+	opt::PlayerIdentifier identifier;
 };
 
-Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding)
+Player::Player(sf::TcpSocket* socket, opt::PlayerIdentifier identifier, const KeyBinding* binding)
 	: m_key_binding(binding)
 	, m_current_mission_status(MissionStatus::kMissionRunning)
 	, m_identifier(identifier)
@@ -90,9 +90,9 @@ void Player::HandleEvent(const sf::Event& event, CommandQueue& commands)
 			if (m_socket)
 			{
 				sf::Packet packet;
-				packet << static_cast<sf::Int32>(Client::PacketType::PlayerEvent);
+				packet << static_cast<opt::ClientPacket>(Client::PacketType::PlayerEvent);
 				packet << m_identifier;
-				packet << static_cast<sf::Int32>(action);
+				packet << static_cast<opt::Action> (action);
 				m_socket->send(packet);
 			}
 
@@ -112,9 +112,9 @@ void Player::HandleEvent(const sf::Event& event, CommandQueue& commands)
 		{
 			// Send realtime change over network
 			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Client::PacketType::PlayerRealtimeChange);
+			packet << static_cast<opt::ClientPacket>(Client::PacketType::PlayerRealtimeChange);
 			packet << m_identifier;
-			packet << static_cast<sf::Int32>(action);
+			packet << static_cast<opt::Action>(action);
 			packet << (event.type == sf::Event::KeyPressed);
 			m_socket->send(packet);
 		}
@@ -132,9 +132,9 @@ void Player::DisableAllRealtimeActions()
 	for (const auto& action : m_action_proxies)
 	{
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Client::PacketType::PlayerRealtimeChange);
+		packet << static_cast<opt::ClientPacket>(Client::PacketType::PlayerRealtimeChange);
 		packet << m_identifier;
-		packet << static_cast<sf::Int32>(action.first);
+		packet << static_cast<opt::Action>(action.first);
 		packet << false;
 		m_socket->send(packet);
 	}

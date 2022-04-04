@@ -120,9 +120,6 @@
     <ClCompile Include="MenuState.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
-    <ClCompile Include="MultiplayerGameState.cpp">
-      <Filter>Source Files\States</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkNode.cpp">
       <Filter>Source Files\Node</Filter>
     </ClCompile>
@@ -168,7 +165,7 @@
     <ClCompile Include="DangerTrigger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LobbyState.cpp">
+    <ClCompile Include="MultiplayerGameState.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
   </ItemGroup>
@@ -335,9 +332,6 @@
     <ClInclude Include="PauseState.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
-    <ClInclude Include="MultiplayerGameState.hpp">
-      <Filter>Header Files\States</Filter>
-    </ClInclude>
     <ClInclude Include="Entity.hpp">
       <Filter>Header Files\Nodes</Filter>
     </ClInclude>
@@ -371,7 +365,7 @@
     <ClInclude Include="Dangerous.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LobbyState.hpp">
+    <ClInclude Include="MultiplayerGameState.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="NetworkOptimisations.hpp">

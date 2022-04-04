@@ -10,6 +10,7 @@ namespace Server
 	{
 		BroadcastMessage,
 		InitialState,
+		StartGame,
 		PlayerEvent,
 		PlayerRealtimeChange,
 		PlayerConnect,
@@ -29,6 +30,7 @@ namespace Client
 	enum class PacketType
 	{
 		StillHereUpdate,
+		RequestStartGame,
 		PlayerEvent,
 		PlayerRealtimeChange,
 		RequestCoopPartner,

@@ -13,6 +13,7 @@
 
 #include "BloomEffect.hpp"
 #include "CommandQueue.hpp"
+#include "NetworkOptimisations.hpp"
 #include "SoundPlayer.hpp"
 
 #include "NetworkProtocol.hpp"
@@ -46,9 +47,9 @@ public:
 	bool HasPlayerAchievedVictory() const;
 	sf::IntRect GetBackgroundRect(sf::Texture& texture) const;
 
-	PlayerObject* GetPlayer(int identifier) const;
-	PlayerObject* AddPlayer(int identifier, bool is_camera_target);
-	void RemovePlayer(int identifier);
+	PlayerObject* GetPlayer(opt::PlayerIdentifier identifier) const;
+	PlayerObject* AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_target);
+	void RemovePlayer(opt::PlayerIdentifier identifier);
 	bool PollGameAction(GameActions::Action& out);
 
 private:

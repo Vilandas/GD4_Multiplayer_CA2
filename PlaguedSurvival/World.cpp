@@ -21,7 +21,7 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	, m_scenegraph(m_scene_layers)
 	, m_tile_size(64)
 	, m_world_bounds(0.f, 0.f, m_tile_size * 52.f, m_tile_size * 24.f)
-	, m_spawn_position(20, 100)
+	, m_spawn_position(100, 100)
 	, m_networked_world(networked)
 	, m_network_node(nullptr)
 	, m_finish_sprite(nullptr)
@@ -114,7 +114,7 @@ sf::IntRect World::GetBackgroundRect(sf::Texture& texture) const
 	};
 }
 
-PlayerObject* World::GetPlayer(int identifier) const
+PlayerObject* World::GetPlayer(opt::PlayerIdentifier identifier) const
 {
 	for (PlayerObject* a : m_player_characters)
 	{
@@ -126,7 +126,7 @@ PlayerObject* World::GetPlayer(int identifier) const
 	return nullptr;
 }
 
-PlayerObject* World::AddPlayer(int identifier, bool is_camera_target)
+PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_target)
 {
 	std::unique_ptr<PlayerObject> player(
 		new PlayerObject(
@@ -140,7 +140,7 @@ PlayerObject* World::AddPlayer(int identifier, bool is_camera_target)
 			));
 
 	player->setScale(0.5f, 0.5f);
-	player->setPosition(m_camera.GetCenter());
+	player->setPosition(400, 0);
 	player->SetIdentifier(identifier);
 
 	m_player_characters.emplace_back(player.get());

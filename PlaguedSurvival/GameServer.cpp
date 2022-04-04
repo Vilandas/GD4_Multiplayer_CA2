@@ -347,11 +347,9 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		for (opt::PlayerCount i = 0; i < player_count; ++i)
 		{
 			opt::PlayerIdentifier player_identifier;
-			sf::Int32 player_hitpoints;
 			sf::Vector2f player_position;
-			packet >> player_identifier >> player_position.x >> player_position.y >> player_hitpoints;
+			packet >> player_identifier >> player_position.x >> player_position.y;
 			m_player_info[player_identifier].m_position = player_position;
-			m_player_info[player_identifier].m_hitpoints = player_hitpoints;
 		}
 	}
 	break;
@@ -379,6 +377,17 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 			SendToAll(packet);
 		}
 	}
+	break;
+
+	case Client::PacketType::RequestStartGame:
+	{
+		sf::Packet packet;
+		packet << static_cast<opt::ServerPacket>(Server::PacketType::StartGame);
+		SendToAll(packet);
+
+		m_lobby = false;
+	}
+	break;
 	}
 }
 
@@ -536,7 +545,7 @@ void GameServer::UpdateClientState()
 
 		for (const auto& player : m_player_info)
 		{
-			update_client_state_packet << player.first << player.second.m_position.x << player.second.m_position.y << player.second.m_hitpoints;
+			update_client_state_packet << player.first << player.second.m_position.x << player.second.m_position.y;
 		}
 	}
 

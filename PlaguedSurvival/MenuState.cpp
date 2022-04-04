@@ -32,7 +32,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	host_play_button->SetCallback([this]()
 	{
 		RequestStackPop();
-		RequestStackPush(StateID::kHostLobby);
+		RequestStackPush(StateID::kHostGame);
 	});
 
 	auto join_play_button = std::make_shared<GUI::Button>(context);
@@ -41,7 +41,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	join_play_button->SetCallback([this]()
 	{
 		RequestStackPop();
-		RequestStackPush(StateID::kJoinLobby);
+		RequestStackPush(StateID::kJoinGame);
 	});
 
 	auto settings_button = std::make_shared<GUI::Button>(context);

@@ -9,16 +9,16 @@ KeyBinding::KeyBinding(int control_preconfiguration)
 	// Set initial key bindings for player 1
 	if (control_preconfiguration == 1)
 	{
-		m_key_map[sf::Keyboard::Left] = PlayerAction::kMoveLeft;
-		m_key_map[sf::Keyboard::Right] = PlayerAction::kMoveRight;
-		m_key_map[sf::Keyboard::Up] = PlayerAction::kJump;
+		m_key_map[sf::Keyboard::A] = PlayerAction::kMoveLeft;
+		m_key_map[sf::Keyboard::D] = PlayerAction::kMoveRight;
+		m_key_map[sf::Keyboard::Space] = PlayerAction::kJump;
 	}
 	else if (control_preconfiguration == 2)
 	{
 		// Player 2
-		m_key_map[sf::Keyboard::A] = PlayerAction::kMoveLeft;
-		m_key_map[sf::Keyboard::D] = PlayerAction::kMoveRight;
-		m_key_map[sf::Keyboard::Space] = PlayerAction::kJump;
+		m_key_map[sf::Keyboard::Left] = PlayerAction::kMoveLeft;
+		m_key_map[sf::Keyboard::Right] = PlayerAction::kMoveRight;
+		m_key_map[sf::Keyboard::Up] = PlayerAction::kJump;
 	}
 }
 

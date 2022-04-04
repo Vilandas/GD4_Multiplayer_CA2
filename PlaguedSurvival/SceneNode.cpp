@@ -153,6 +153,8 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	DrawCurrent(target, states);
 	DrawChildren(target, states);
 	sf::FloatRect rect = GetBoundingRect();
+
+	if (GetCategory() == static_cast<unsigned int>(Category::kPlatform)) return;
 	DrawBoundingRect(target, states, rect);
 }
 

@@ -1,4 +1,6 @@
 #pragma once
+#include <array>
+
 #include "Dangerous.hpp"
 #include "DangerTrigger.hpp"
 #include "Entity.hpp"
@@ -15,8 +17,12 @@ public:
 	sf::FloatRect GetBoundingRect() const override;
 
 	void AddBelowTile(TileNode* tile);
-	void SetIsTop();
+	void SetIsTop(bool is_new = false);
 	void SetIsTop(const std::queue<TileNode*>& below_tiles);
+	void SetActiveCollision();
+
+	void SetLeftTile(TileNode* tile);
+	void SetRightTile(TileNode* tile);
 
 	void Trigger() override;
 
@@ -27,7 +33,10 @@ private:
 private:
 	sf::Sprite m_sprite;
 	bool m_is_top;
+	bool m_active_collision;
 
+	TileNode* m_left_tile;
+	TileNode* m_right_tile;
 	std::queue<TileNode*> m_below_tiles;
 };
 

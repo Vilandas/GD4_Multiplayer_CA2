@@ -87,16 +87,12 @@ void PlatformerCharacter::HandleCollisions()
 {
 	std::set<SceneNode*> collisions;
 
-	PredictCollisionsWithScene(*GetSceneLayers()[static_cast<int>(Layers::kPlatforms)], collisions);
+	PredictCollisionsWithScene(*GetSceneLayers()[static_cast<int>(Layers::kActivePlatforms)], collisions);
 
 	for (SceneNode* node : collisions)
 	{
-		if (Category::kPlatform & node->GetCategory())
-		{
-			const CollisionLocation location = Collision::CollisionLocation(*this, *node);
-
-			BlockingCollision(location);
-		}
+		const CollisionLocation location = Collision::CollisionLocation(*this, *node);
+		BlockingCollision(location);
 	}
 }
 

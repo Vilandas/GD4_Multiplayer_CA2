@@ -137,7 +137,7 @@ PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_
 			m_sounds,
 			m_camera,
 			is_camera_target
-			));
+		));
 
 	player->setScale(0.5f, 0.5f);
 	player->setPosition(400, 0);
@@ -147,6 +147,32 @@ PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_
 	m_scene_layers[static_cast<int>(Layers::kPlayers)]->AttachChild(std::move(player));
 	return m_player_characters.back();
 }
+
+//Debug function
+//PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_target)
+//{
+//	for (int i = identifier; i < 20; i++)
+//	{
+//		std::unique_ptr<PlayerObject> player(
+//			new PlayerObject(
+//				m_scene_layers,
+//				PlatformerCharacterType::kDoc,
+//				m_textures,
+//				m_fonts,
+//				m_sounds,
+//				m_camera,
+//				is_camera_target
+//			));
+//
+//		player->setScale(0.5f, 0.5f);
+//		player->setPosition(400 + (100 * i), 0);
+//		player->SetIdentifier(identifier);
+//
+//		m_player_characters.emplace_back(player.get());
+//		m_scene_layers[static_cast<int>(Layers::kPlayers)]->AttachChild(std::move(player));
+//	}
+//	return m_player_characters.front();
+//}
 
 void World::RemovePlayer(opt::PlayerIdentifier identifier)
 {
@@ -196,6 +222,7 @@ void World::BuildScene()
 
 	for (int i = 0; i < 15; i++)
 	{
+		TileNode* last_node = nullptr;
 		for (int j = 0; j < 50; j++)
 		{
 			Textures texture_id = Textures::kDefault;
@@ -261,17 +288,40 @@ void World::BuildScene()
 					(m_world_bounds.height - m_tile_size * 17) + i * m_tile_size
 				);
 
+				TileNode* current_node = tile.get();
+
 				const auto result = top_tiles.emplace(j, tile.get());
 				if (result.second)
 				{
-					tile->SetIsTop();
+					tile->SetIsTop(true);
+					m_scene_layers[static_cast<int>(Layers::kActivePlatforms)]->AttachChild(std::move(tile));
 				}
 				else
 				{
 					top_tiles[j]->AddBelowTile(tile.get());
+					m_scene_layers[static_cast<int>(Layers::kPlatforms)]->AttachChild(std::move(tile));
 				}
 
-				m_scene_layers[static_cast<int>(Layers::kPlatforms)]->AttachChild(std::move(tile));
+				if (last_node != nullptr)
+				{
+					current_node->SetLeftTile(last_node);
+					last_node->SetRightTile(current_node);
+				}
+				else //last_node was air so this node is exposed
+				{
+					current_node->SetActiveCollision();
+				}
+
+				last_node = current_node;
+			}
+			else
+			{
+				if (last_node != nullptr)
+				{
+					last_node->SetActiveCollision();
+				}
+
+				last_node = nullptr;
 			}
 
 		}

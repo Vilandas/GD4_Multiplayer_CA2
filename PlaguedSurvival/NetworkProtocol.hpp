@@ -20,6 +20,7 @@ namespace Server
 		SpawnPickup,
 		SpawnSelf,
 		UpdateClientState,
+		UpdateDangerTime,
 		MissionSuccess
 	};
 }

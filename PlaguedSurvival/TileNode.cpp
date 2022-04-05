@@ -99,10 +99,12 @@ void TileNode::OnDamage()
 		if (m_left_tile != nullptr)
 		{
 			m_left_tile->SetActiveCollision();
+			m_left_tile->SetRightTile(nullptr);
 		}
 		if (m_right_tile != nullptr)
 		{
 			m_right_tile->SetActiveCollision();
+			m_right_tile->SetLeftTile(nullptr);
 		}
 	}
 }

@@ -27,7 +27,7 @@ public:
 	void Trigger() override;
 
 private:
-	virtual void DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+	void DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 	void OnDamage() override;
 
 private:

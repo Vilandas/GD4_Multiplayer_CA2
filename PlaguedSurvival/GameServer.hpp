@@ -62,6 +62,7 @@ private:
 	void BroadcastMessage(const std::string& message);
 	void SendToAll(sf::Packet& packet);
 	void UpdateClientState();
+	void UpdateDangers(sf::Time dt);
 
 private:
 	sf::Thread m_thread;

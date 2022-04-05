@@ -7,6 +7,7 @@
 
 #include <SFML/Network/Packet.hpp>
 
+#include "DangerTrigger.hpp"
 #include "PickupType.hpp"
 #include "Utility.hpp"
 
@@ -125,7 +126,9 @@ void GameServer::ExecutionThread()
 	sf::Time frame_time = sf::Time::Zero;
 	sf::Time tick_rate = sf::seconds(1.f / 20.f);
 	sf::Time tick_time = sf::Time::Zero;
-	sf::Clock frame_clock, tick_clock;
+	sf::Time danger_rate = sf::seconds(1.f);
+	sf::Time danger_time = sf::Time::Zero;
+	sf::Clock frame_clock, tick_clock, danger_clock;
 
 	while (!m_waiting_thread_end)
 	{
@@ -149,6 +152,18 @@ void GameServer::ExecutionThread()
 		{
 			Tick();
 			tick_time -= tick_rate;
+		}
+
+		if (!m_lobby)
+		{
+			danger_time += danger_clock.getElapsedTime();
+			danger_clock.restart();
+
+			if (danger_time >= danger_rate)
+			{
+				UpdateDangers(danger_time);
+				danger_time = sf::Time::Zero;
+			}
 		}
 
 		//sleep
@@ -550,4 +565,13 @@ void GameServer::UpdateClientState()
 	}
 
 	SendToAll(update_client_state_packet);
+}
+
+void GameServer::UpdateDangers(sf::Time dt)
+{
+	sf::Packet packet;
+	packet << static_cast<opt::ServerPacket>(Server::PacketType::UpdateDangerTime)
+		<< dt.asSeconds();
+
+	SendToAll(packet);
 }

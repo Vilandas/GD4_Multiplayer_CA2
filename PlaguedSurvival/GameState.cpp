@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "DangerTrigger.hpp"
 #include "Player.hpp"
 
 GameState::GameState(StateStack& stack, Context context)
@@ -23,6 +24,8 @@ void GameState::Draw()
 bool GameState::Update(sf::Time dt)
 {
 	m_world.Update(dt);
+
+	DangerTrigger::Instance().Update(dt);
 
 	if (!m_world.HasAlivePlayer())
 	{

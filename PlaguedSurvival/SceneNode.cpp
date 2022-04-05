@@ -165,9 +165,12 @@ void SceneNode::DrawCurrent(sf::RenderTarget&, sf::RenderStates states) const
 
 void SceneNode::DrawChildren(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	int i = 0;
+	int size = m_children.size();
 	for (const Ptr& child : m_children)
 	{
 		child->draw(target, states);
+		i++;
 	}
 }
 

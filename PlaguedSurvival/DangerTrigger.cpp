@@ -7,14 +7,17 @@ DangerTrigger DangerTrigger::m_instance;
 DangerTrigger::DangerTrigger()
 	: m_dangers()
 	, m_danger_time()
-	, m_dangers_per_second(0.8f)
-	, m_danger_increment_per_second(0.1f)
+	, m_dangers_per_second(DEFAULT_DPS)
+	, m_danger_increment_per_second(DEFAULT_IPS)
 {
 }
 
 void DangerTrigger::Clear()
 {
 	m_dangers.clear();
+	m_danger_time = 0;
+	m_dangers_per_second = DEFAULT_DPS;
+	m_danger_increment_per_second = DEFAULT_IPS;
 }
 
 void DangerTrigger::AddDangerObject(Dangerous* danger)
@@ -29,11 +32,16 @@ void DangerTrigger::RemoveDangerObject(const Dangerous* danger)
 
 void DangerTrigger::Update(sf::Time dt)
 {
+	Update(dt.asSeconds());
+}
+
+void DangerTrigger::Update(float dt_as_seconds)
+{
 	if (m_dangers.empty()) return;
 
-	m_danger_time += dt.asSeconds();
+	m_danger_time += dt_as_seconds;
 
-	if (m_danger_time >= 1)
+	while (m_danger_time >= 1)
 	{
 		m_danger_time -= 1;
 
@@ -51,5 +59,5 @@ void DangerTrigger::Update(sf::Time dt)
 		}
 	}
 
-	m_dangers_per_second += m_danger_increment_per_second * dt.asSeconds();
+	m_dangers_per_second += m_danger_increment_per_second * dt_as_seconds;
 }

@@ -10,6 +10,8 @@
 #include <iostream>
 #include <SFML/Network/Packet.hpp>
 
+#include "DangerTrigger.hpp"
+
 sf::IpAddress GetAddressFromFile()
 {
 	{
@@ -543,6 +545,16 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 					player->setPosition(interpolated_position);
 				}
 			}
+		}
+		break;
+
+
+		case Server::PacketType::UpdateDangerTime:
+		{
+			float time;
+			packet >> time;
+
+			DangerTrigger::Instance().Update(sf::seconds(time));
 		}
 		break;
 

@@ -113,5 +113,6 @@ void AnimatedSpriteArtist::CalculateLargestAndSmallest()
 
 void AnimatedSpriteArtist::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	states.transform *= getTransform();
 	CurrentSpriteState().DrawCurrent(target, states, m_flipped);
 }

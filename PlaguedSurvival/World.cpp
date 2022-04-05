@@ -66,7 +66,6 @@ void World::Update(sf::Time dt)
 
 void World::Draw()
 {
-	std::cout << "\nDrawing" << std::endl;
 	if (PostEffect::IsSupported())
 	{
 		m_scene_texture.clear(sf::Color(150, 150, 150, 255));
@@ -80,7 +79,6 @@ void World::Draw()
 		m_window.setView(m_camera.GetView());
 		m_window.draw(m_scenegraph);
 	}
-	std::cout << "Done" << std::endl;
 }
 
 CommandQueue& World::GetCommandQueue()

@@ -43,6 +43,7 @@ private:
 	sf::RenderWindow& m_window;
 	TextureHolder& m_texture_holder;
 	FontHolder& m_font_holder;
+	MusicPlayer& m_music;
 
 	Camera m_camera;
 	GUI::Container m_lobby_gui;

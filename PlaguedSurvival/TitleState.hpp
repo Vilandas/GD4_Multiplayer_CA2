@@ -2,6 +2,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
+#include "AnimatedSpriteArtist.hpp"
 #include "State.hpp"
 
 class TitleState : public State
@@ -15,6 +16,7 @@ public:
 private:
 	sf::Sprite m_background_sprite;
 	sf::Text m_text;
+	AnimatedSpriteArtist m_artist;
 
 	bool m_show_text;
 	sf::Time m_text_effect_time;

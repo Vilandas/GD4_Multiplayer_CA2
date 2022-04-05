@@ -13,7 +13,7 @@ GameState::GameState(StateStack& stack, Context context)
 	m_world.AddPlayer(1, true);
 	m_player.SetMissionStatus(MissionStatus::kMissionRunning);
 	// Play game theme
-	context.music->Play(MusicThemes::kMissionTheme);
+	context.music->Play(MusicThemes::kMenuTheme);
 }
 
 void GameState::Draw()

@@ -5,17 +5,23 @@
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
 #include "Button.hpp"
+#include "PlatformerCharacterType.hpp"
 
-
+namespace
+{
+	const std::vector<PlatformerCharacterData> Table = InitializePlatformerCharacterData();
+}
 
 MenuState::MenuState(StateStack& stack, Context context)
 	: State(stack, context)
+	, m_artist(Table[static_cast<int>(PlatformerCharacterType::kDoc)].m_animation_data.ToVector(), *context.textures)
 	, m_camera(context.window->getDefaultView())
 	, m_gui_container(*context.window, m_camera)
 {
 	sf::Texture& texture = context.textures->Get(Textures::kTitleScreen);
 
 	m_background_sprite.setTexture(texture);
+	m_artist.setPosition(380.f, 380.f);
 
 	auto play_button = std::make_shared<GUI::Button>(context);
 	play_button->setPosition(100, 300);
@@ -75,12 +81,14 @@ void MenuState::Draw()
 	sf::RenderWindow& window = *GetContext().window;
 	window.setView(window.getDefaultView());
 	window.draw(m_background_sprite);
+	window.draw(m_artist);
 	window.draw(m_gui_container);
 	
 }
 
 bool MenuState::Update(sf::Time dt)
 {
+	m_artist.UpdateCurrent(dt);
 	return true;
 }
 

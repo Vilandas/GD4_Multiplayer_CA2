@@ -3,7 +3,7 @@
 
 #include "AnimatedSprite.hpp"
 
-class AnimatedSpriteArtist : public sf::Drawable
+class AnimatedSpriteArtist : public sf::Drawable, public sf::Transformable
 {
 public:
 	AnimatedSpriteArtist(std::vector<AnimatedSprite> sprite_states);

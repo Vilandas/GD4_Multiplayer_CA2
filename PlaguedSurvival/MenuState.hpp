@@ -5,6 +5,8 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
+#include "AnimatedSpriteArtist.hpp"
+
 class MenuState : public State
 {
 public:
@@ -15,6 +17,7 @@ public:
 
 private:
 	sf::Sprite m_background_sprite;
+	AnimatedSpriteArtist m_artist;
 	Camera m_camera;
 	GUI::Container m_gui_container;
 };

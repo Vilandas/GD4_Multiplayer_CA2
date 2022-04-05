@@ -37,6 +37,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, m_window(*context.window)
 	, m_texture_holder(*context.textures)
 	, m_font_holder(*context.fonts)
+	, m_music(*context.music)
 	, m_camera(m_window.getDefaultView())
 	, m_lobby_gui(m_window, m_camera)
 	, m_connected(false)
@@ -101,9 +102,6 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	}
 
 	m_socket.setBlocking(false);
-
-	//Play game theme
-	context.music->Play(MusicThemes::kMissionTheme);
 }
 
 void MultiplayerGameState::Draw()
@@ -562,6 +560,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 		case Server::PacketType::StartGame:
 		{
 			m_lobby = false;
+			m_music.Play(MusicThemes::kMenuTheme);
 		}
 		break;
 	}

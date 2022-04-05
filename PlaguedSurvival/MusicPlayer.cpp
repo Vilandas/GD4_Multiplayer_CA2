@@ -3,13 +3,11 @@
 MusicPlayer::MusicPlayer()
 	: m_volume(100.f)
 {
-	m_filenames[MusicThemes::kMenuTheme] = "Media/Music/MenuTheme.ogg";
-	m_filenames[MusicThemes::kMissionTheme] = "Media/Music/MissionTheme.ogg";
+	m_filenames[MusicThemes::kMenuTheme] = "Media/Music/Plagued_Choir.ogg";
 }
 
 void MusicPlayer::Play(MusicThemes theme)
 {
-	return;
 	std::string filename = m_filenames[theme];
 
 	if (!m_music.openFromFile(filename))

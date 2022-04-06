@@ -24,6 +24,8 @@ public:
 	void Play();
 	void Reset();
 
+	void SetColor(sf::Color color);
+
 private:
 	void Advance();
 	sf::Sprite& CurrentSprite();

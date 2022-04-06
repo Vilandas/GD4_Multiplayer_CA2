@@ -27,7 +27,7 @@ std::vector<PlatformerCharacterData> InitializePlatformerCharacterData()
 	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_coyote_time = 0.25f;
 	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_health = 100;
 	data[static_cast<int>(PlatformerCharacterType::kDoc)].m_animation_data = PlatformerAnimationData{
-		{Textures::kDocIdle, 190, 256, 10, 1},
+		{Textures::kDocIdle, 190, 256, 10, 1.25f},
 		{Textures::kDocRun, 256, 256, 4, 1},
 		{Textures::kDocIdle, 190, 256, 10, 1}
 	};

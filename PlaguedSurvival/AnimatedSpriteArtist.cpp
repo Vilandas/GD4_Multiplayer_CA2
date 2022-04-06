@@ -82,6 +82,14 @@ void AnimatedSpriteArtist::Flipped(bool flipped)
 	m_flipped = flipped;
 }
 
+void AnimatedSpriteArtist::SetColor(sf::Color color)
+{
+	for (AnimatedSprite& state : m_sprite_states)
+	{
+		state.SetColor(color);
+	}
+}
+
 AnimatedSprite& AnimatedSpriteArtist::CurrentSpriteState()
 {
 	return m_sprite_states[m_current_sprite_index];

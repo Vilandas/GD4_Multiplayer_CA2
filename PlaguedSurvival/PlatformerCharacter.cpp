@@ -36,12 +36,18 @@ PlatformerCharacter::PlatformerCharacter(
 	, m_camera(camera)
 	, m_artist(Table[static_cast<int>(type)].m_animation_data.ToVector(), textures)
 	, m_sounds(sounds)
+	, m_name_display(nullptr)
 	, m_coyote_time(Table[static_cast<int>(type)].m_coyote_time)
 	, m_air_time(0)
 	, m_jumping(false)
 	, m_camera_move_constraint(false)
 	, m_is_camera_target(is_camera_target)
 {
+	std::unique_ptr<TextNode> name_display(new TextNode(scene_layers, fonts, ""));
+	m_name_display = name_display.get();
+	m_name_display->setPosition(-50, 130);
+	m_name_display->scale(1.5f, 1.5f);
+	AttachChild(std::move(name_display));
 }
 
 unsigned PlatformerCharacter::GetCategory() const
@@ -80,6 +86,18 @@ bool PlatformerCharacter::IsJumping() const
 {
 	return m_jumping;
 }
+
+TextNode& PlatformerCharacter::GetNameDisplay() const
+{
+	return *m_name_display;
+}
+
+void PlatformerCharacter::SetColor(sf::Color color)
+{
+	m_artist.SetColor(color);
+	m_name_display->SetFillColor(color);
+}
+
 /// <summary>
 /// Handle Collisions between the Player Character and any SceneNode with a collider
 /// </summary>
@@ -148,6 +166,7 @@ void PlatformerCharacter::ApplyGravity(sf::Time dt)
 
 void PlatformerCharacter::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	target.draw(*m_name_display, states);
 	target.draw(m_artist, states);
 }
 

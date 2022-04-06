@@ -21,6 +21,11 @@ namespace GUI
 		m_text.setString(text);
 	}
 
+	void Label::SetFillColor(sf::Color color)
+	{
+		m_text.setFillColor(color);
+	}
+
 	void Label::HandleEvent(const sf::Event& event)
 	{
 	}

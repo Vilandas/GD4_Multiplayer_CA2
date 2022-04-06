@@ -30,6 +30,9 @@ public:
 	bool IsGrounded() const;
 	bool IsJumping() const;
 
+	TextNode& GetNameDisplay() const;
+	void SetColor(sf::Color color);
+
 protected:
 	void HandleCollisions() override;
 	void BlockingCollision(CollisionLocation location);
@@ -48,6 +51,7 @@ private:
 	Camera& m_camera;
 	AnimatedSpriteArtist m_artist;
 	SoundPlayer& m_sounds;
+	TextNode* m_name_display;
 	float m_coyote_time;
 	float m_air_time;
 	bool m_jumping;

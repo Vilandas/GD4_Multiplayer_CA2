@@ -6,6 +6,7 @@
 
 #include "ParticleNode.hpp"
 #include "ParticleType.hpp"
+#include "PlayerColors.hpp"
 #include "PostEffect.hpp"
 #include "SoundNode.hpp"
 #include "TileNode.hpp"
@@ -124,7 +125,7 @@ PlayerObject* World::GetPlayer(opt::PlayerIdentifier identifier) const
 	return nullptr;
 }
 
-PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_target)
+PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::string name, bool is_camera_target)
 {
 	std::unique_ptr<PlayerObject> player(
 		new PlayerObject(
@@ -138,11 +139,18 @@ PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_
 		));
 
 	player->setScale(0.5f, 0.5f);
-	player->setPosition(400, 0);
+	player->setPosition(200 + (100 * identifier), 0);
 	player->SetIdentifier(identifier);
+	player->GetNameDisplay().SetString(name);
+	player->SetColor(ExtraColors::GetColor(static_cast<PlayerColors>(identifier - 1)));
 
 	m_player_characters.emplace_back(player.get());
-	m_scene_layers[static_cast<int>(Layers::kPlayers)]->AttachChild(std::move(player));
+
+	Layers layer = is_camera_target
+		? Layers::kLocalPlayer
+		: Layers::kPlayers;
+
+	m_scene_layers[static_cast<int>(layer)]->AttachChild(std::move(player));
 	return m_player_characters.back();
 }
 

@@ -20,6 +20,8 @@ public:
 	void Play();
 	void Flipped(bool flipped);
 
+	void SetColor(sf::Color color);
+
 private:
 	AnimatedSprite& CurrentSpriteState();
 	void CalculateLargestAndSmallest();

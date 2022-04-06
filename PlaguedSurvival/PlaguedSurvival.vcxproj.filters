@@ -371,6 +371,9 @@
     <ClInclude Include="NetworkOptimisations.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerColors.hpp">
+      <Filter>Header Files\Enums</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ResourceHolder.inl">

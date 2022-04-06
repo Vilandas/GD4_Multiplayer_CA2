@@ -76,6 +76,14 @@ void AnimatedSprite::Reset()
 	m_time_since_last_frame = 0;
 }
 
+void AnimatedSprite::SetColor(sf::Color color)
+{
+	for (sf::Sprite& sprite : m_sprites)
+	{
+		sprite.setColor(color);
+	}
+}
+
 void AnimatedSprite::Advance()
 {
 	m_current_index++;

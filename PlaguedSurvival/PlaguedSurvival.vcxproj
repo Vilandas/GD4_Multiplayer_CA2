@@ -241,6 +241,7 @@
     <ClInclude Include="PlatformerCharacterType.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="PlayerAction.hpp" />
+    <ClInclude Include="PlayerColors.hpp" />
     <ClInclude Include="PostEffect.hpp" />
     <ClInclude Include="ProjectileType.hpp" />
     <ClInclude Include="ResourceHolder.hpp" />

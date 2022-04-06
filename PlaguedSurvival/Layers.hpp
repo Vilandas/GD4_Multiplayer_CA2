@@ -6,6 +6,7 @@ enum class Layers
 	kActivePlatforms,
 	kDangers,
 	kPlayers,
+	kLocalPlayer,
 	kAir,
 	kLayerCount
 };

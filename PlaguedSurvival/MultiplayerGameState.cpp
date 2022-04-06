@@ -11,6 +11,7 @@
 #include <SFML/Network/Packet.hpp>
 
 #include "DangerTrigger.hpp"
+#include "PlayerColors.hpp"
 
 sf::IpAddress GetAddressFromFile()
 {
@@ -429,7 +430,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 			GeneratePlayer(player_identifier);
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, GetContext().keys1));
 			m_local_player_identifiers.push_back(player_identifier);
-			m_world.AddPlayer(player_identifier, true);
+			m_world.AddPlayer(player_identifier, std::to_string(player_identifier), true);
 		}
 		break;
 
@@ -441,7 +442,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 
 			GeneratePlayer(player_identifier);
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, nullptr));
-			m_world.AddPlayer(player_identifier, false);
+			m_world.AddPlayer(player_identifier, std::to_string(player_identifier), false);
 		}
 		break;
 
@@ -474,7 +475,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 
 				GeneratePlayer(player_identifier, player_name);
 				m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, nullptr));
-				m_world.AddPlayer(player_identifier, false);
+				m_world.AddPlayer(player_identifier, player_name, false);
 			}
 		}
 		break;
@@ -488,7 +489,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, GetContext().keys2));
 
 			m_local_player_identifiers.emplace_back(player_identifier);
-			m_world.AddPlayer(player_identifier, false);
+			m_world.AddPlayer(player_identifier, std::to_string(player_identifier), false);
 		}
 		break;
 
@@ -572,6 +573,7 @@ void MultiplayerGameState::GeneratePlayer(opt::PlayerIdentifier identifier)
 	const auto label = std::make_shared<GUI::Label>(name, m_font_holder);
 
 	label->setPosition(100, 200 + (20 * identifier));
+	label->SetFillColor(ExtraColors::GetColor(static_cast<PlayerColors>(identifier - 1)));
 
 	m_players[identifier].m_name = label;
 	m_lobby_gui.Pack(label);
@@ -582,6 +584,7 @@ void MultiplayerGameState::GeneratePlayer(opt::PlayerIdentifier identifier, cons
 	const auto label = std::make_shared<GUI::Label>(name, m_font_holder);
 
 	label->setPosition(100, 200 + (20 * identifier));
+	label->SetFillColor(ExtraColors::GetColor(static_cast<PlayerColors>(identifier - 1)));
 
 	m_players[identifier].m_name = label;
 	m_lobby_gui.Pack(label);

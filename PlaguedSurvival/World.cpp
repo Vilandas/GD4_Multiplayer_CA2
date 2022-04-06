@@ -125,7 +125,7 @@ PlayerObject* World::GetPlayer(opt::PlayerIdentifier identifier) const
 	return nullptr;
 }
 
-PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::string name, bool is_camera_target)
+PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::string& name, bool is_camera_target)
 {
 	std::unique_ptr<PlayerObject> player(
 		new PlayerObject(
@@ -139,9 +139,9 @@ PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::stri
 		));
 
 	player->setScale(0.5f, 0.5f);
-	player->setPosition(200 + (100 * identifier), 0);
+	player->setPosition(200 + (200 * identifier), 0);
 	player->SetIdentifier(identifier);
-	player->GetNameDisplay().SetString(name);
+	player->SetName(name);
 	player->SetColor(ExtraColors::GetColor(static_cast<PlayerColors>(identifier - 1)));
 
 	m_player_characters.emplace_back(player.get());
@@ -155,10 +155,12 @@ PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::stri
 }
 
 //Debug function
-//PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, bool is_camera_target)
+//PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::string& name, bool is_camera_target)
 //{
 //	for (int i = identifier; i < 20; i++)
 //	{
+//		is_camera_target = i == 1;
+//
 //		std::unique_ptr<PlayerObject> player(
 //			new PlayerObject(
 //				m_scene_layers,
@@ -171,11 +173,18 @@ PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::stri
 //			));
 //
 //		player->setScale(0.5f, 0.5f);
-//		player->setPosition(400 + (100 * i), 0);
-//		player->SetIdentifier(identifier);
+//		player->setPosition(200 + (200 * i), 0);
+//		player->SetIdentifier(i);
+//		player->SetName("Daniel");
+//		player->SetColor(ExtraColors::GetColor(static_cast<PlayerColors>(i - 1)));
 //
 //		m_player_characters.emplace_back(player.get());
-//		m_scene_layers[static_cast<int>(Layers::kPlayers)]->AttachChild(std::move(player));
+//
+//		Layers layer = is_camera_target
+//			? Layers::kLocalPlayer
+//			: Layers::kPlayers;
+//
+//		m_scene_layers[static_cast<int>(layer)]->AttachChild(std::move(player));
 //	}
 //	return m_player_characters.front();
 //}
@@ -207,7 +216,7 @@ void World::BuildScene()
 
 	const int map[][50] =
 	{
-		{0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,2,0,0,0,0,0,0,0,1,3,0,0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,9,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,1,4,4,4,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0},
 		{0,0,2,2,2,2,2,2,2,2,2,2,2,3,0,0,1,4,4,4,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0},

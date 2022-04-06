@@ -45,7 +45,7 @@ PlatformerCharacter::PlatformerCharacter(
 {
 	std::unique_ptr<TextNode> name_display(new TextNode(scene_layers, fonts, ""));
 	m_name_display = name_display.get();
-	m_name_display->setPosition(-50, 130);
+	m_name_display->setPosition(0, 110);
 	m_name_display->scale(1.5f, 1.5f);
 	AttachChild(std::move(name_display));
 }
@@ -87,9 +87,9 @@ bool PlatformerCharacter::IsJumping() const
 	return m_jumping;
 }
 
-TextNode& PlatformerCharacter::GetNameDisplay() const
+void PlatformerCharacter::SetName(const std::string& name) const
 {
-	return *m_name_display;
+	m_name_display->SetString(name);
 }
 
 void PlatformerCharacter::SetColor(sf::Color color)

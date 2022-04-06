@@ -48,7 +48,7 @@ public:
 	sf::IntRect GetBackgroundRect(sf::Texture& texture) const;
 
 	PlayerObject* GetPlayer(opt::PlayerIdentifier identifier) const;
-	PlayerObject* AddPlayer(opt::PlayerIdentifier identifier, std::string name, bool is_camera_target);
+	PlayerObject* AddPlayer(opt::PlayerIdentifier identifier, const std::string& name, bool is_camera_target);
 	void RemovePlayer(opt::PlayerIdentifier identifier);
 	bool PollGameAction(GameActions::Action& out);
 

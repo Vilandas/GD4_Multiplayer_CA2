@@ -4,32 +4,32 @@
 enum class PlayerColors
 {
 	kWhite,
-	kBlue,
 	kRed,
 	kGreen,
+	kBlue,
 	kMagenta,
 	kYellow,
 	kCyan,
 	kOrange,
-	kTeal,
-	kMidnightBlue,
+	kApricot,
 	kDeepPink,
-	kTurquoise,
+	kPurple,
+	kBrown,
+	kMint,
 	kDarkGreen,
-	kMaroon,
-	kAquaMarine,
+	kTeal,
 };
 
 namespace ExtraColors
 {
-	static const sf::Color Orange(255, 215, 0);
+	static const sf::Color Orange(245, 130, 48);
 	static const sf::Color Teal(0, 128, 128);
-	static const sf::Color MidnightBlue(25, 25, 112);
+	static const sf::Color Purple(145, 30, 180);
 	static const sf::Color DeepPink(255, 20, 147);
-	static const sf::Color Turquoise(64, 224, 208);
+	static const sf::Color Apricot(255, 215, 180);
 	static const sf::Color DarkGreen(0, 100, 0);
-	static const sf::Color Maroon(128, 0, 0);
-	static const sf::Color AquaMarine(127, 255, 212);
+	static const sf::Color Brown(170, 110, 40);
+	static const sf::Color Mint(170, 255, 195);
 
 	inline sf::Color GetColor(PlayerColors playerColor)
 	{
@@ -44,12 +44,12 @@ namespace ExtraColors
 		case PlayerColors::kCyan: return sf::Color::Cyan;
 		case PlayerColors::kOrange: return Orange;
 		case PlayerColors::kTeal: return Teal;
-		case PlayerColors::kMidnightBlue: return MidnightBlue;
+		case PlayerColors::kPurple: return Purple;
 		case PlayerColors::kDeepPink: return DeepPink;
-		case PlayerColors::kTurquoise: return Turquoise;
+		case PlayerColors::kApricot: return Apricot;
 		case PlayerColors::kDarkGreen: return DarkGreen;
-		case PlayerColors::kMaroon: return Maroon;
-		case PlayerColors::kAquaMarine: return AquaMarine;
+		case PlayerColors::kBrown: return Brown;
+		case PlayerColors::kMint: return Mint;
 		}
 
 		return sf::Color::White;

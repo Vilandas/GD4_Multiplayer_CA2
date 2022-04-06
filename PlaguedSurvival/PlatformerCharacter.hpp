@@ -30,7 +30,7 @@ public:
 	bool IsGrounded() const;
 	bool IsJumping() const;
 
-	TextNode& GetNameDisplay() const;
+	void SetName(const std::string& name) const;
 	void SetColor(sf::Color color);
 
 protected:

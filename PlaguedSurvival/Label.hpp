@@ -13,6 +13,7 @@ namespace GUI
 	public:
 		Label(const std::string& text, const FontHolder& fonts);
 		bool IsSelectable() const override;
+		std::string GetText() const;
 		void SetText(const std::string& text);
 		void SetFillColor(sf::Color color);
 		void HandleEvent(const sf::Event& event) override;

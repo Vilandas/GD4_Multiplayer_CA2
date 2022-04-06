@@ -29,9 +29,14 @@ public:
 	void ResetJump();
 	bool IsGrounded() const;
 	bool IsJumping() const;
+	bool IsAlive() const;
 
 	void SetName(const std::string& name) const;
 	void SetColor(sf::Color color);
+	void Kill();
+	void Destroy() override;
+
+	bool IsDestroyed() const override;
 
 protected:
 	void HandleCollisions() override;
@@ -57,4 +62,5 @@ private:
 	bool m_jumping;
 	bool m_camera_move_constraint;
 	bool m_is_camera_target;
+	bool m_destroyed;
 };

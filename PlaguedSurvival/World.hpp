@@ -43,10 +43,10 @@ public:
 	CommandQueue& GetCommandQueue();
 	void SetWorldHeight(float height);
 
-	bool HasAlivePlayer() const;
 	bool HasPlayerAchievedVictory() const;
 	sf::IntRect GetBackgroundRect(sf::Texture& texture) const;
 
+	PlayerObject* GetAlivePlayer() const;
 	PlayerObject* GetPlayer(opt::PlayerIdentifier identifier) const;
 	PlayerObject* AddPlayer(opt::PlayerIdentifier identifier, const std::string& name, bool is_camera_target);
 	void RemovePlayer(opt::PlayerIdentifier identifier);
@@ -55,6 +55,7 @@ public:
 private:
 	void BuildScene();
 	void UpdateSounds();
+	void KillPlayersNotInWorld();
 
 private:
 	sf::RenderWindow& m_window;
@@ -71,6 +72,7 @@ private:
 	sf::FloatRect m_world_bounds;
 	sf::Vector2f m_spawn_position;
 	std::vector<PlayerObject*> m_player_characters;
+	opt::PlayerCount m_alive_players;
 
 	BloomEffect m_bloom_effect;
 	bool m_networked_world;

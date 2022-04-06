@@ -12,15 +12,21 @@ GameOverState::GameOverState(StateStack& stack, Context context, const std::stri
 	, m_game_over_text()
 	, m_elapsed_time(sf::Time::Zero)
 {
-	sf::Font& font = context.fonts->Get(Fonts::Main);
-	sf::Vector2f windowSize(context.window->getSize());
+	const sf::Font& font = context.fonts->Get(Fonts::Main);
+	const sf::Vector2f windowSize(context.window->getSize());
+
+	const std::string chosen_text = context.game_winner->length() == 0
+		? text
+		: *context.game_winner + " Wins!";
 
 	m_game_over_text.setFont(font);
-	m_game_over_text.setString(text);
+	m_game_over_text.setString(chosen_text);
 
 	m_game_over_text.setCharacterSize(70);
 	Utility::CentreOrigin(m_game_over_text);
 	m_game_over_text.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
+
+	*context.game_winner = "";
 }
 
 void GameOverState::Draw()

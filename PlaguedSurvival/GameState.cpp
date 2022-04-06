@@ -27,12 +27,7 @@ bool GameState::Update(sf::Time dt)
 
 	DangerTrigger::Instance().Update(dt);
 
-	if (!m_world.HasAlivePlayer())
-	{
-		m_player.SetMissionStatus(MissionStatus::kMissionFailure);
-		RequestStackPush(StateID::kGameOver);
-	}
-	else if (m_world.HasPlayerAchievedVictory())
+	if (m_world.HasPlayerAchievedVictory())
 	{
 		m_player.SetMissionStatus(MissionStatus::kMissionSuccess);
 		RequestStackPush(StateID::kGameOver);

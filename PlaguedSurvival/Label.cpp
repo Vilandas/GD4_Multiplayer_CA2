@@ -16,6 +16,11 @@ namespace GUI
 		return false;
 	}
 
+	std::string Label::GetText() const
+	{
+		return m_text.getString();
+	}
+
 	void Label::SetText(const std::string& text)
 	{
 		m_text.setString(text);

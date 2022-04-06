@@ -87,6 +87,11 @@ bool PlatformerCharacter::IsJumping() const
 	return m_jumping;
 }
 
+bool PlatformerCharacter::IsAlive() const
+{
+	return GetHitPoints() > 0;
+}
+
 void PlatformerCharacter::SetName(const std::string& name) const
 {
 	m_name_display->SetString(name);
@@ -96,6 +101,21 @@ void PlatformerCharacter::SetColor(sf::Color color)
 {
 	m_artist.SetColor(color);
 	m_name_display->SetFillColor(color);
+}
+
+void PlatformerCharacter::Kill()
+{
+	Damage(GetHitPoints());
+}
+
+void PlatformerCharacter::Destroy()
+{
+	m_destroyed = true;
+}
+
+bool PlatformerCharacter::IsDestroyed() const
+{
+	return m_destroyed;
 }
 
 /// <summary>

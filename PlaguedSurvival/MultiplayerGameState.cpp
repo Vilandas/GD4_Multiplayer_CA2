@@ -268,7 +268,8 @@ void MultiplayerGameState::UpdateGame(sf::Time dt)
 				position_update_packet
 					<< identifier
 					<< player->getPosition().x
-					<< player->getPosition().y;
+					<< player->getPosition().y
+					<< static_cast<opt::HitPoints>(player->GetHitPoints());
 			}
 		}
 		m_socket.send(position_update_packet);
@@ -562,6 +563,17 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 		{
 			m_lobby = false;
 			m_music.Play(MusicThemes::kMenuTheme);
+		}
+		break;
+
+
+		case Server::PacketType::MissionSuccess:
+		{
+			opt::PlayerIdentifier winner_id;
+			packet >> winner_id;
+
+			*GetContext().game_winner = m_players[winner_id].m_name->GetText();
+			RequestStackPush(StateID::kGameOver);
 		}
 		break;
 	}

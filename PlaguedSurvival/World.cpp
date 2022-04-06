@@ -23,6 +23,7 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	, m_tile_size(64)
 	, m_world_bounds(0.f, 0.f, m_tile_size * 52.f, m_tile_size * 24.f)
 	, m_spawn_position(100, 100)
+	, m_alive_players(0)
 	, m_networked_world(networked)
 	, m_network_node(nullptr)
 	, m_finish_sprite(nullptr)
@@ -62,6 +63,7 @@ void World::Update(sf::Time dt)
 	//Apply movement
 	m_scenegraph.Update(dt, m_command_queue);
 
+	KillPlayersNotInWorld();
 	UpdateSounds();
 }
 
@@ -92,14 +94,14 @@ void World::SetWorldHeight(float height)
 	m_world_bounds.height = height;
 }
 
-bool World::HasAlivePlayer() const
-{
-	return true;
-}
-
 bool World::HasPlayerAchievedVictory() const
 {
-	return false;
+	if (m_networked_world)
+	{
+		return m_alive_players <= 1;
+	}
+
+	return m_alive_players == 0;
 }
 
 sf::IntRect World::GetBackgroundRect(sf::Texture& texture) const
@@ -111,6 +113,22 @@ sf::IntRect World::GetBackgroundRect(sf::Texture& texture) const
 		static_cast<int>(m_world_bounds.width),
 		static_cast<int>(m_world_bounds.height)
 	};
+}
+
+PlayerObject* World::GetAlivePlayer() const
+{
+	if (m_alive_players > 0)
+	{
+		for (auto& player : m_player_characters)
+		{
+			if (player->IsAlive())
+			{
+				return player;
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 PlayerObject* World::GetPlayer(opt::PlayerIdentifier identifier) const
@@ -127,6 +145,8 @@ PlayerObject* World::GetPlayer(opt::PlayerIdentifier identifier) const
 
 PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::string& name, bool is_camera_target)
 {
+	m_alive_players++;
+
 	std::unique_ptr<PlayerObject> player(
 		new PlayerObject(
 			m_scene_layers,
@@ -139,7 +159,7 @@ PlayerObject* World::AddPlayer(opt::PlayerIdentifier identifier, const std::stri
 		));
 
 	player->setScale(0.5f, 0.5f);
-	player->setPosition(200 + (200 * identifier), 0);
+	player->setPosition(200 + (200 * identifier), 64);
 	player->SetIdentifier(identifier);
 	player->SetName(name);
 	player->SetColor(ExtraColors::GetColor(static_cast<PlayerColors>(identifier - 1)));
@@ -194,6 +214,8 @@ void World::RemovePlayer(opt::PlayerIdentifier identifier)
 	PlayerObject* player = GetPlayer(identifier);
 	if (player)
 	{
+		m_alive_players--;
+
 		player->Destroy();
 		m_player_characters.erase(std::find(m_player_characters.begin(), m_player_characters.end(), player));
 	}
@@ -217,78 +239,36 @@ void World::BuildScene()
 	const int map[][50] =
 	{
 		{0,0,0,0,0,0,2,0,0,0,0,0,0,0,1,3,0,0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,9,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,1,4,4,4,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0},
-		{0,0,2,2,2,2,2,2,2,2,2,2,2,3,0,0,1,4,4,4,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0},
-		{1,2,4,4,4,4,4,4,4,4,4,4,4,5,0,0,9,4,4,4,4,4,4,3,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,4,2,2,2,2,2,2,2,3},
-		{9,4,4,4,4,4,4,4,4,4,4,4,4,5,0,0,6,7,7,7,7,7,4,4,3,0,0,0,0,0,0,0,0,0,0,1,4,4,4,4,4,4,4,4,4,4,4,4,4,5},
-		{6,7,7,7,7,7,7,7,7,7,7,7,7,8,0,0,0,0,0,0,0,0,9,4,5,0,0,0,0,0,0,0,0,1,2,4,7,7,7,7,7,7,7,7,7,7,7,7,7,5},
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,7,4,3,0,0,0,0,0,0,0,9,4,8,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,2,2,2,2,2,2,2,7,7,0,0,0,0,0,0,0,0,0,0,0,0,7,7,8},
+		{0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,4,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,1,5,5,5,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0},
+		{0,0,2,2,2,2,2,2,2,2,2,2,2,3,0,0,1,5,5,5,5,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0},
+		{1,2,5,5,5,5,5,5,5,5,5,5,5,6,0,0,4,5,5,5,5,5,5,3,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,5,2,2,2,2,2,2,2,3},
+		{4,5,5,5,5,5,5,5,5,5,5,5,5,6,0,0,7,8,8,8,8,8,5,5,3,0,0,0,0,0,0,0,0,0,0,1,5,5,5,5,5,5,5,5,5,5,5,5,5,6},
+		{7,8,8,8,8,8,8,8,8,8,8,8,8,9,0,0,0,0,0,0,0,0,4,5,6,0,0,0,0,0,0,0,0,1,2,5,8,8,8,8,8,8,8,8,8,8,8,8,8,6},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,5,3,0,0,0,0,0,0,0,4,5,9,0,0,0,0,0,0,0,0,0,0,0,0,0,6},
+		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,2,2,2,2,2,2,2,8,8,0,0,0,0,0,0,0,0,0,0,0,0,8,8,9},
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,2,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,4,3,0,0,0,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,2,0,0,9,0,0,0,0,9,5,0,0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,7,0,0,9,0,0,0,0,9,5,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,9,0,0,0,0,9,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,5,3,0,0,0,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,2,0,0,4,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,8,0,0,4,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,0,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,4,0,0,0,0,4,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 	};
 
 	std::unordered_map<int, TileNode*> top_tiles(50);
-	sf::Texture& crack_texture = m_textures.Get(Textures::kCrack);
+	const sf::Texture& crack_texture = m_textures.Get(Textures::kCrack);
 
 	for (int i = 0; i < 15; i++)
 	{
 		TileNode* last_node = nullptr;
 		for (int j = 0; j < 50; j++)
 		{
-			Textures texture_id = Textures::kDefault;
-			bool skip = false;
+			const int id = map[i][j];
+			const bool skip = id == 0;
 
-			switch (map[i][j])
-			{
-			case 0:
-				skip = true;
-				break;
-
-			case 1:
-				texture_id = Textures::kDirt1;
-				break;
-
-			case 2:
-				texture_id = Textures::kDirt2;
-				break;
-
-			case 3:
-				texture_id = Textures::kDirt3;
-				break;
-
-			case 4:
-				texture_id = Textures::kDirt5;
-				break;
-
-			case 5:
-				texture_id = Textures::kDirt6;
-				break;
-
-			case 6:
-				texture_id = Textures::kDirt7;
-				break;
-
-			case 7:
-				texture_id = Textures::kDirt8;
-				break;
-
-			case 8:
-				texture_id = Textures::kDirt9;
-				break;
-
-			case 9:
-				texture_id = Textures::kDirt4;
-				break;
-
-			default:
-				texture_id = Textures::kDefault;
-			}
+			const Textures texture_id = skip
+				? Textures::kDefault
+				: static_cast<Textures>(static_cast<int>(Textures::kDirt1) + id - 1);
 
 			if (!skip)
 			{
@@ -386,4 +366,16 @@ void World::UpdateSounds()
 
 	//// Remove unused sounds
 	//m_sounds.RemoveStoppedSounds();
+}
+
+void World::KillPlayersNotInWorld()
+{
+	for (const auto& player : m_player_characters)
+	{
+		if (!player->GetBoundingRect().intersects(m_world_bounds))
+		{
+			m_alive_players--;
+			player->Kill();
+		}
+	}
 }

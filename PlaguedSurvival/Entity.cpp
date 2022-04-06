@@ -291,13 +291,11 @@ sf::Vector2f Entity::GetMaxVelocity() const
 
 void Entity::Repair(unsigned int points)
 {
-	assert(points > 0);
 	m_hitpoints += points;
 }
 
-void Entity::Damage(int points)
+void Entity::Damage(unsigned int points)
 {
-	assert(points > 0);
 	m_hitpoints -= points;
 
 	if (m_hitpoints < 0)

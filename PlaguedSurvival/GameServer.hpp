@@ -49,6 +49,7 @@ private:
 	void SetListening(bool enable);
 	void ExecutionThread();
 	void Tick();
+	opt::PlayerIdentifier FindWinnerIdentity() const;
 	sf::Time Now() const;
 
 	void HandleIncomingPackets();
@@ -81,6 +82,5 @@ private:
 	std::vector<PeerPtr> m_peers;
 	bool m_waiting_thread_end;
 
-	sf::Time m_last_spawn_time;
-	sf::Time m_time_for_next_spawn;
+	int m_alive_players;
 };

@@ -36,6 +36,7 @@ public:
 		Camera* camera;
 		KeyBinding* keys1;
 		KeyBinding* keys2;
+		std::string* game_winner = new std::string("");
 	};
 
 public:

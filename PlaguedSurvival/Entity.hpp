@@ -32,8 +32,8 @@ public:
 	sf::Vector2f GetDirectionUnit() const;
 	sf::Vector2f GetMaxVelocity() const;
 	void Repair(unsigned int points);
-	void Damage(int points);
-	void Destroy();
+	void Damage(unsigned int points);
+	virtual void Destroy();
 	void SetGravity(float gravity);
 	bool IsDestroyed() const override;
 

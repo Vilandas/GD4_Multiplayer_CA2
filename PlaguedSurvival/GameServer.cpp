@@ -29,8 +29,7 @@ GameServer::GameServer()
 	, m_player_count(0)
 	, m_peers(1)
 	, m_waiting_thread_end(false)
-	, m_last_spawn_time(sf::Time::Zero)
-	, m_time_for_next_spawn(sf::seconds(5.f))
+	, m_alive_players()
 {
 	m_listener_socket.setBlocking(false);
 	m_peers[0].reset(new RemotePeer());
@@ -175,75 +174,29 @@ void GameServer::Tick()
 {
 	UpdateClientState();
 
-	//Check if the game is over = all planes position.y < offset
-	//bool all_aircraft_done = true;
-	//for (const auto& current : m_aircraft_info)
-	//{
-	//	//As long one player has not crossed the finish line game on
-	//	if (current.second.m_position.y > 0.f)
-	//	{
-	//		all_aircraft_done = false;
-	//	}
-	//}
+	if (!m_lobby && m_alive_players <= 1)
+	{
+		const opt::PlayerIdentifier winner_id = FindWinnerIdentity();
 
-	//if (all_aircraft_done)
-	//{
-	//	sf::Packet mission_success_packet;
-	//	mission_success_packet << static_cast<sf::Int32>(Server::PacketType::MissionSuccess);
-	//	SendToAll(mission_success_packet);
-	//}
+		sf::Packet packet;
+		packet << static_cast<opt::ServerPacket>(Server::PacketType::MissionSuccess)
+			<< winner_id;
 
-	//Remove aircraft that have been destroyed
-	//for (auto itr = m_aircraft_info.begin(); itr != m_aircraft_info.end();)
-	//{
-	//	if (itr->second.m_hitpoints <= 0)
-	//	{
-	//		m_aircraft_info.erase(itr++);
-	//	}
-	//	else
-	//	{
-	//		++itr;
-	//	}
-	//}
+		SendToAll(packet);
+	}
+}
 
-	//Check if it is time to spawn enemies
-	//if (Now() >= m_time_for_next_spawn + m_last_spawn_time)
-	//{
-	//	//Not going to spawn enemies near the end
-	//	if (m_battlefield_rect.top > 600.f)
-	//	{
-	//		std::size_t enemy_count = 1 + Utility::RandomInt(2);
-	//		float spawn_centre = static_cast<float>(Utility::RandomInt(500) - 250);
+opt::PlayerIdentifier GameServer::FindWinnerIdentity() const
+{
+	for (const auto& player : m_player_info)
+	{
+		if (player.second.m_hitpoints > 0)
+		{
+			return player.first;
+		}
+	}
 
-	//		//If there is only one enemy it is at the spawn_centre
-	//		float plane_distance = 0.f;
-	//		float next_spawn_position = spawn_centre;
-
-	//		//If there are two then they are centred on the spawn centre
-	//		if (enemy_count == 2)
-	//		{
-	//			plane_distance = static_cast<float>(150 + Utility::RandomInt(250));
-	//			next_spawn_position = spawn_centre - plane_distance / 2.f;
-	//		}
-
-	//		//TODO Do we really need two packets here?
-	//		//Send a spawn packet to the clients
-	//		for (std::size_t i = 0; i < enemy_count; ++i)
-	//		{
-	//			sf::Packet packet;
-	//			packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy);
-	//			packet << static_cast<sf::Int32>(1 + Utility::RandomInt(static_cast<int>(AircraftType::kAircraftCount) - 1));
-	//			packet << m_world_height - m_battlefield_rect.top + 500;
-	//			packet << next_spawn_position;
-
-	//			next_spawn_position += plane_distance / 2.f;
-	//			SendToAll(packet);
-	//		}
-
-	//		m_last_spawn_time = Now();
-	//		m_time_for_next_spawn = sf::milliseconds(2000 + Utility::RandomInt(6000));
-	//	}
-	//}
+	return 0;
 }
 
 sf::Time GameServer::Now() const
@@ -318,6 +271,7 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 
 	case Client::PacketType::RequestCoopPartner:
 	{
+		m_alive_players++;
 		opt::PlayerIdentifier identifier = GetFreeIdentifier();
 		receiving_peer.m_player_identifiers.emplace_back(identifier);
 
@@ -363,8 +317,16 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		{
 			opt::PlayerIdentifier player_identifier;
 			sf::Vector2f player_position;
-			packet >> player_identifier >> player_position.x >> player_position.y;
+			opt::HitPoints hitpoints;
+			packet >> player_identifier >> player_position.x >> player_position.y >> hitpoints;
+
+			if (hitpoints <= 0 && m_player_info[player_identifier].m_hitpoints > 0)
+			{
+				m_alive_players--;
+			}
+
 			m_player_info[player_identifier].m_position = player_position;
+			m_player_info[player_identifier].m_hitpoints = hitpoints;
 		}
 	}
 	break;
@@ -378,24 +340,12 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		packet >> action;
 		packet >> x;
 		packet >> y;
-
-		//Enemy explodes, with a certain probability, drop a pickup
-		//To avoid multiple messages only listen to the first peer (host)
-		if (action == GameActions::EnemyExplode && Utility::RandomInt(3) == 0 && &receiving_peer == m_peers[0].get())
-		{
-			sf::Packet packet;
-			packet << static_cast<opt::ServerPacket>(Server::PacketType::SpawnPickup);
-			packet << static_cast<sf::Int32>(Utility::RandomInt(static_cast<int>(PickupType::kPickupCount)));
-			packet << x;
-			packet << y;
-
-			SendToAll(packet);
-		}
 	}
 	break;
 
 	case Client::PacketType::RequestStartGame:
 	{
+		SetListening(false);
 		sf::Packet packet;
 		packet << static_cast<opt::ServerPacket>(Server::PacketType::StartGame);
 		SendToAll(packet);
@@ -432,6 +382,7 @@ void GameServer::HandleIncomingConnections()
 
 	if (m_listener_socket.accept(m_peers[m_connected_players]->m_socket) == sf::TcpListener::Done)
 	{
+		m_alive_players++;
 		const opt::PlayerIdentifier identifier = GetFreeIdentifier();
 
 		//Order the new client to spawn its player 1
@@ -477,6 +428,7 @@ void GameServer::HandleDisconnections()
 			//Inform everyone of a disconnection, erase
 			for (opt::PlayerIdentifier identifier : (*itr)->m_player_identifiers)
 			{
+				m_alive_players--;
 				SendToAll((sf::Packet() << static_cast<opt::ServerPacket>(Server::PacketType::PlayerDisconnect) << identifier));
 				m_player_info.erase(identifier);
 			}

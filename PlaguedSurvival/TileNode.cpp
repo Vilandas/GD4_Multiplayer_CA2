@@ -2,9 +2,10 @@
 
 #include <utility>
 
-TileNode::TileNode(const SceneLayers& scene_layers, const sf::Texture& texture, int hit_points)
+TileNode::TileNode(const SceneLayers& scene_layers, const sf::Texture& texture, const sf::Texture& crack_texture, int hit_points)
 	: Entity(scene_layers, hit_points)
 	, m_sprite(texture)
+	, m_crack_sprite(crack_texture)
 	, m_is_top()
 	, m_active_collision()
 	, m_left_tile(nullptr)
@@ -81,6 +82,11 @@ void TileNode::Trigger()
 void TileNode::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_sprite, states);
+
+	if (GetHitPoints() == 1)
+	{
+		target.draw(m_crack_sprite, states);
+	}
 }
 
 void TileNode::OnDamage()

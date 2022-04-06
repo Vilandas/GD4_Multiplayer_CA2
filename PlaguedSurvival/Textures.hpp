@@ -9,13 +9,10 @@ enum class Textures
 	kParticle,
 	kExplosion,
 
-	kBrunoIdle,
-	kBrunoRun,
-	kBrunoJump,
-
 	kDocIdle,
 	kDocRun,
 
+	kCrack,
 	kDirt1,
 	kDirt2,
 	kDirt3,

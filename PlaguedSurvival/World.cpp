@@ -234,6 +234,7 @@ void World::BuildScene()
 	};
 
 	std::unordered_map<int, TileNode*> top_tiles(50);
+	sf::Texture& crack_texture = m_textures.Get(Textures::kCrack);
 
 	for (int i = 0; i < 15; i++)
 	{
@@ -295,7 +296,8 @@ void World::BuildScene()
 				std::unique_ptr<TileNode> tile(
 					new TileNode(
 						m_scene_layers,
-						texture));
+						texture,
+						crack_texture));
 
 				tile->setScale(0.5, 0.5);
 				tile->setPosition(

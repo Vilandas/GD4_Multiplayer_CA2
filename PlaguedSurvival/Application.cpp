@@ -112,12 +112,10 @@ void Application::LoadTextures()
 	m_textures.Load(Textures::kParticle, "Media/Textures/Effects/Particle.png");
 	m_textures.Load(Textures::kExplosion, "Media/Textures/Effects/Explosion.png");
 
-	m_textures.Load(Textures::kBrunoIdle, "Media/Textures/Characters/Bruno_Idle.png");
-	m_textures.Load(Textures::kBrunoRun, "Media/Textures/Characters/Bruno_Run.png");
-
 	m_textures.Load(Textures::kDocIdle, "Media/Textures/Characters/Doc_Idle.png");
 	m_textures.Load(Textures::kDocRun, "Media/Textures/Characters/Doc_Run.png");
 
+	m_textures.Load(Textures::kCrack, "Media/Textures/Tiles/Crack.png");
 	LoadTexturesPattern(Textures::kDirt1, Textures::kDirt9, "Media/Textures/Tiles/Dirt/Dirt");
 }
 

@@ -11,6 +11,7 @@ public:
 	explicit TileNode(
 		const SceneLayers& scene_layers,
 		const sf::Texture& texture,
+		const sf::Texture& crack_texture,
 		int hit_points = 2);
 
 	unsigned GetCategory() const override;
@@ -32,6 +33,7 @@ private:
 
 private:
 	sf::Sprite m_sprite;
+	sf::Sprite m_crack_sprite;
 	bool m_is_top;
 	bool m_active_collision;
 

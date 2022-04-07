@@ -16,6 +16,8 @@ namespace GUI
 		std::string GetText() const;
 		void SetText(const std::string& text);
 		void SetFillColor(sf::Color color);
+		void SetCharacterSize(unsigned int size);
+		void CentreOriginText();
 		void HandleEvent(const sf::Event& event) override;
 
 	private:

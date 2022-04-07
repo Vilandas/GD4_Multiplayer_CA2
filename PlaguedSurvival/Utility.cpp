@@ -7,6 +7,8 @@
 
 #include <cmath>
 #include <random>
+#include <SFML/Graphics/RectangleShape.hpp>
+
 #include "Animation.hpp"
 
 namespace
@@ -30,6 +32,12 @@ void Utility::CentreOrigin(sf::Sprite& sprite)
 {
 	const sf::FloatRect bounds = sprite.getLocalBounds();
 	sprite.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
+}
+
+void Utility::CentreOrigin(sf::RectangleShape& shape)
+{
+	const sf::FloatRect bounds = shape.getLocalBounds();
+	shape.setOrigin(std::floor(bounds.left + bounds.width / 2.f), std::floor(bounds.top + bounds.height / 2.f));
 }
 
 void Utility::CentreOrigin(sf::Text& text)

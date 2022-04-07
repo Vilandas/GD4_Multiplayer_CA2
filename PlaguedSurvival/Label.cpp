@@ -4,6 +4,8 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 
+#include "Utility.hpp"
+
 namespace GUI
 {
 	Label::Label(const std::string& text, const FontHolder& fonts)
@@ -29,6 +31,16 @@ namespace GUI
 	void Label::SetFillColor(sf::Color color)
 	{
 		m_text.setFillColor(color);
+	}
+
+	void Label::SetCharacterSize(unsigned int size)
+	{
+		m_text.setCharacterSize(size);
+	}
+
+	void Label::CentreOriginText()
+	{
+		Utility::CentreOrigin(m_text);
 	}
 
 	void Label::HandleEvent(const sf::Event& event)

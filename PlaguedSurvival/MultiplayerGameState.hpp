@@ -48,6 +48,8 @@ private:
 	Camera m_camera;
 	GUI::Container m_lobby_gui;
 	sf::Sprite m_background_sprite;
+	sf::Text m_lobby_text;
+	sf::Text m_waiting_for_host_text;
 
 	std::map<opt::PlayerIdentifier, PlayerData> m_players;
 	std::vector<opt::PlayerIdentifier> m_local_player_identifiers;

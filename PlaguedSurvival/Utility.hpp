@@ -9,6 +9,7 @@
 
 namespace sf
 {
+	class RectangleShape;
 	class Sprite;
 	class Text;
 }
@@ -17,6 +18,7 @@ class Utility
 {
 public:
 	static void CentreOrigin(sf::Sprite& sprite);
+	static void CentreOrigin(sf::RectangleShape& shape);
 	static void CentreOrigin(sf::Text& text);
 	static void CentreOrigin(Animation& animation);
 	static std::string toString(sf::Keyboard::Key key);

@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Network/Packet.hpp>
 
 #include "DangerTrigger.hpp"
@@ -70,6 +71,20 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	m_failed_connection_text.setString("Could not connect to the remote server");
 	Utility::CentreOrigin(m_failed_connection_text);
 
+	m_lobby_text.setFont(context.fonts->Get(Fonts::Main));
+	m_lobby_text.setString("Lobby");
+	m_lobby_text.setCharacterSize(35);
+	m_lobby_text.setFillColor(sf::Color::White);
+	Utility::CentreOrigin(m_lobby_text);
+	m_lobby_text.setPosition(960, 200);
+
+	m_waiting_for_host_text.setFont(context.fonts->Get(Fonts::Main));
+	m_waiting_for_host_text.setString("Waiting for host to start the game");
+	m_waiting_for_host_text.setCharacterSize(24);
+	m_waiting_for_host_text.setFillColor(sf::Color::White);
+	Utility::CentreOrigin(m_waiting_for_host_text);
+	m_waiting_for_host_text.setPosition(960, 800);
+
 	sf::IpAddress ip;
 	if (m_host)
 	{
@@ -77,7 +92,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 		ip = "127.0.0.1";
 
 		auto start_button = std::make_shared<GUI::Button>(context);
-		start_button->setPosition(100, 300);
+		start_button->setPosition(860, 860);
 		start_button->SetText("Start Game");
 		start_button->SetCallback([this]()
 			{
@@ -115,7 +130,21 @@ void MultiplayerGameState::Draw()
 		if (m_lobby)
 		{
 			m_window.draw(m_background_sprite);
+
+			sf::RectangleShape backgroundShape;
+			backgroundShape.setFillColor(sf::Color(0, 0, 0, 200));
+			backgroundShape.setSize(sf::Vector2f(600, 800));
+			Utility::CentreOrigin(backgroundShape);
+			backgroundShape.setPosition(960, 540);
+
+			m_window.draw(backgroundShape);
 			m_window.draw(m_lobby_gui);
+			m_window.draw(m_lobby_text);
+
+			if (!m_host)
+			{
+				m_window.draw(m_waiting_for_host_text);
+			}
 
 
 			if (m_local_player_identifiers.size() < 2 && m_player_invitation_time < sf::seconds(0.5f))
@@ -488,7 +517,6 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 
 			GeneratePlayer(player_identifier);
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, GetContext().keys2));
-
 			m_local_player_identifiers.emplace_back(player_identifier);
 			m_world.AddPlayer(player_identifier, std::to_string(player_identifier), false);
 		}
@@ -572,7 +600,10 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 			opt::PlayerIdentifier winner_id;
 			packet >> winner_id;
 
-			*GetContext().game_winner = m_players[winner_id].m_name->GetText();
+			*GetContext().game_winner = winner_id == 0
+				? "Nobody"
+				: m_players[winner_id].m_name->GetText();
+
 			RequestStackPush(StateID::kGameOver);
 		}
 		break;
@@ -584,7 +615,9 @@ void MultiplayerGameState::GeneratePlayer(opt::PlayerIdentifier identifier)
 	std::string name = std::to_string(identifier);
 	const auto label = std::make_shared<GUI::Label>(name, m_font_holder);
 
-	label->setPosition(100, 200 + (20 * identifier));
+	label->SetCharacterSize(20);
+	label->CentreOriginText();
+	label->setPosition(960, 220 + (30 * identifier));
 	label->SetFillColor(ExtraColors::GetColor(static_cast<PlayerColors>(identifier - 1)));
 
 	m_players[identifier].m_name = label;
@@ -595,7 +628,9 @@ void MultiplayerGameState::GeneratePlayer(opt::PlayerIdentifier identifier, cons
 {
 	const auto label = std::make_shared<GUI::Label>(name, m_font_holder);
 
-	label->setPosition(100, 200 + (20 * identifier));
+	label->SetCharacterSize(20);
+	label->CentreOriginText();
+	label->setPosition(960, 220 + (30 * identifier));
 	label->SetFillColor(ExtraColors::GetColor(static_cast<PlayerColors>(identifier - 1)));
 
 	m_players[identifier].m_name = label;

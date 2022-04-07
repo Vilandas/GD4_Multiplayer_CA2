@@ -7,8 +7,6 @@
 
 #include <SFML/Network/Packet.hpp>
 
-#include "DangerTrigger.hpp"
-#include "PickupType.hpp"
 #include "Utility.hpp"
 
 //It is essential to set the sockets to non-blocking - m_socket.setBlocking(false)

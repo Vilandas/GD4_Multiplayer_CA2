@@ -12,6 +12,7 @@
 #include "CommandQueue.hpp"
 #include "Layers.hpp"
 #include "Utility.hpp"
+#include "WorldChunks.hpp"
 
 class SceneNode : public sf::Transformable, public sf::Drawable, private sf::NonCopyable
 {
@@ -44,6 +45,8 @@ public:
 	virtual bool IsMarkedForRemoval() const;
 
 	void PredictCollisionsWithScene(SceneNode& scene_graph, std::set<SceneNode*>& collisions);
+	void PredictCollisionsWithChunks(Layers layer, std::set<SceneNode*>& collisions);
+	void PredictCollisionWithNode(SceneNode& scene_node, std::set<SceneNode*>& collisions);
 	void RemoveWrecks();
 
 protected:

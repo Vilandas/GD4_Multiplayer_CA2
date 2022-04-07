@@ -41,6 +41,7 @@ void TileNode::SetIsTop(bool is_new)
 	if (is_new)
 	{
 		m_active_collision = true;
+		WorldChunks::Instance().AddToChunk(this, Layers::kActivePlatforms);
 	}
 	else
 	{
@@ -62,6 +63,7 @@ void TileNode::SetActiveCollision()
 	m_active_collision = true;
 	Ptr tile = GetSceneLayers()[static_cast<int>(Layers::kPlatforms)]->DetachChild(*this);
 	GetSceneLayers()[static_cast<int>(Layers::kActivePlatforms)]->AttachChild(std::move(tile));
+	WorldChunks::Instance().AddToChunk(this, Layers::kActivePlatforms);
 }
 
 void TileNode::SetLeftTile(TileNode* tile)
@@ -93,6 +95,7 @@ void TileNode::OnDamage()
 {
 	if (IsDestroyed())
 	{
+		WorldChunks::Instance().RemoveFromChunk(this, Layers::kActivePlatforms);
 		DangerTrigger::Instance().RemoveDangerObject(this);
 
 		if (!m_below_tiles.empty())

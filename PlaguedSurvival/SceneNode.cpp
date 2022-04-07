@@ -119,6 +119,19 @@ void SceneNode::PredictCollisionsWithScene(SceneNode& scene_graph, std::set<Scen
 	}
 }
 
+void SceneNode::PredictCollisionsWithChunks(Layers layer, std::set<SceneNode*>& collisions)
+{
+	WorldChunks::Instance().CheckCollision(this, layer, collisions);
+}
+
+void SceneNode::PredictCollisionWithNode(SceneNode& scene_node, std::set<SceneNode*>& collisions)
+{
+	if (this != &scene_node && Collision::Intersects(*this, scene_node) && !IsDestroyed() && !scene_node.IsDestroyed())
+	{
+		collisions.insert(&scene_node);
+	}
+}
+
 void SceneNode::RemoveWrecks()
 {
 	auto wreck_field_begin = std::remove_if(m_children.begin(), m_children.end(), std::mem_fn(&SceneNode::IsMarkedForRemoval));

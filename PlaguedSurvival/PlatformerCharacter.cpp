@@ -125,7 +125,7 @@ void PlatformerCharacter::HandleCollisions()
 {
 	std::set<SceneNode*> collisions;
 
-	PredictCollisionsWithScene(*GetSceneLayers()[static_cast<int>(Layers::kActivePlatforms)], collisions);
+	PredictCollisionsWithChunks(Layers::kActivePlatforms, collisions);
 
 	for (SceneNode* node : collisions)
 	{

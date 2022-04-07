@@ -37,6 +37,7 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	m_camera.SetBoundsConstraint(m_world_bounds);
 
 	DangerTrigger::Instance().Clear();
+	WorldChunks::Instance().Clear();
 	BuildScene();
 }
 

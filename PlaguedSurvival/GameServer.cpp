@@ -384,7 +384,7 @@ void GameServer::HandleIncomingConnections()
 		const opt::PlayerIdentifier identifier = GetFreeIdentifier();
 
 		//Order the new client to spawn its player 1
-		m_player_info[identifier].name = std::to_string(identifier);
+		m_player_info[identifier].name = "Player " + std::to_string(identifier);
 		m_player_info[identifier].m_position = sf::Vector2f(0, 0);
 		m_player_info[identifier].m_hitpoints = 100;
 

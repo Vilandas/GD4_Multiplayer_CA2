@@ -460,7 +460,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 			GeneratePlayer(player_identifier);
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, GetContext().keys1));
 			m_local_player_identifiers.push_back(player_identifier);
-			m_world.AddPlayer(player_identifier, std::to_string(player_identifier), true);
+			m_world.AddPlayer(player_identifier, m_players[player_identifier].m_name->GetText(), true);
 		}
 		break;
 
@@ -472,7 +472,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 
 			GeneratePlayer(player_identifier);
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, nullptr));
-			m_world.AddPlayer(player_identifier, std::to_string(player_identifier), false);
+			m_world.AddPlayer(player_identifier, m_players[player_identifier].m_name->GetText(), false);
 		}
 		break;
 
@@ -612,7 +612,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 
 void MultiplayerGameState::GeneratePlayer(opt::PlayerIdentifier identifier)
 {
-	std::string name = std::to_string(identifier);
+	std::string name = "Player " + std::to_string(identifier);
 	const auto label = std::make_shared<GUI::Label>(name, m_font_holder);
 
 	label->SetCharacterSize(20);

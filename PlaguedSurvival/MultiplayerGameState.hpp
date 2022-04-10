@@ -1,4 +1,7 @@
 #pragma once
+#include <iostream>
+#include <fstream>
+
 #include "Container.hpp"
 #include "Button.hpp"
 #include "State.hpp"
@@ -14,9 +17,11 @@ public:
 	MultiplayerGameState(StateStack& stack, Context context, bool is_host);
 	void Draw() override;
 	bool Update(sf::Time dt) override;
+	void UpdateStatistics(sf::Time dt);
 	void UpdateLobby(sf::Time dt);
 	void UpdateGame(sf::Time dt);
 	void ReceivePacket();
+	void SendPacket(sf::Packet& packet);
 
 	bool HandleEvent(const sf::Event& event) override;
 	void DisableAllRealtimeActions();
@@ -30,6 +35,7 @@ private:
 	{
 		std::shared_ptr<GUI::Label> m_name;
 		PlayerPtr m_player;
+		opt::GamesWon m_games_won;
 	};
 
 private:
@@ -37,6 +43,7 @@ private:
 	void HandlePacket(opt::ServerPacket packet_type, sf::Packet& packet);
 	void GeneratePlayer(opt::PlayerIdentifier identifier);
 	void GeneratePlayer(opt::PlayerIdentifier identifier, const std::string& name);
+	void SaveData() const;
 
 private:
 	World m_world;
@@ -51,6 +58,12 @@ private:
 	sf::Text m_lobby_text;
 	sf::Text m_waiting_for_host_text;
 
+	sf::Text m_statistics_text;
+	sf::Time m_statistics_update_time;
+	sf::Uint32 m_bytes_received;
+	sf::Uint32 m_bytes_sent;
+
+	opt::GamesWon m_games_won;
 	std::map<opt::PlayerIdentifier, PlayerData> m_players;
 	std::vector<opt::PlayerIdentifier> m_local_player_identifiers;
 	sf::TcpSocket m_socket;

@@ -61,8 +61,10 @@ void World::Update(sf::Time dt)
 	//Apply movement
 	m_scenegraph.Update(dt, m_command_queue);
 
-	KillPlayersNotInWorld();
-	UpdateSounds();
+	if (!m_networked_world)
+	{
+		KillPlayersNotInWorld();
+	}
 }
 
 void World::Draw()
@@ -328,34 +330,6 @@ void World::BuildScene()
 		m_network_node = network_node.get();
 		m_scenegraph.AttachChild(std::move(network_node));
 	}
-}
-
-void World::UpdateSounds()
-{
-	//sf::Vector2f listener_position;
-
-	//// 0 players (multiplayer mode, until server is connected) -> view center
-	//if (m_player_aircraft.empty())
-	//{
-	//	listener_position = m_camera.getCenter();
-	//}
-
-	//// 1 or more players -> mean position between all aircrafts
-	//else
-	//{
-	//	for (Aircraft* aircraft : m_player_aircraft)
-	//	{
-	//		listener_position += aircraft->GetWorldPosition();
-	//	}
-
-	//	listener_position /= static_cast<float>(m_player_aircraft.size());
-	//}
-
-	//// Set listener's position
-	//m_sounds.SetListenerPosition(listener_position);
-
-	//// Remove unused sounds
-	//m_sounds.RemoveStoppedSounds();
 }
 
 void World::KillPlayersNotInWorld()

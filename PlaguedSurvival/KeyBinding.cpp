@@ -11,7 +11,8 @@ KeyBinding::KeyBinding(int control_preconfiguration)
 	{
 		m_key_map[sf::Keyboard::A] = PlayerAction::kMoveLeft;
 		m_key_map[sf::Keyboard::D] = PlayerAction::kMoveRight;
-		m_key_map[sf::Keyboard::Space] = PlayerAction::kJump;
+		m_key_map[sf::Keyboard::W] = PlayerAction::kJump;
+		m_key_map[sf::Keyboard::Space] = PlayerAction::kAttack;
 	}
 	else if (control_preconfiguration == 2)
 	{
@@ -19,6 +20,7 @@ KeyBinding::KeyBinding(int control_preconfiguration)
 		m_key_map[sf::Keyboard::Left] = PlayerAction::kMoveLeft;
 		m_key_map[sf::Keyboard::Right] = PlayerAction::kMoveRight;
 		m_key_map[sf::Keyboard::Up] = PlayerAction::kJump;
+		m_key_map[sf::Keyboard::RControl] = PlayerAction::kAttack;
 	}
 }
 

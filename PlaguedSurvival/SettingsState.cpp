@@ -19,6 +19,7 @@ SettingsState::SettingsState(StateStack& stack, Context context)
 		AddButtonLabel(static_cast<int>(PlayerAction::kMoveLeft), x, 0, "Move Left", context);
 		AddButtonLabel(static_cast<int>(PlayerAction::kMoveRight), x, 1, "Move Right", context);
 		AddButtonLabel(static_cast<int>(PlayerAction::kJump), x, 2, "Jump", context);
+		AddButtonLabel(static_cast<int>(PlayerAction::kAttack), x, 3, "Attack", context);
 	}
 
 	UpdateLabels();

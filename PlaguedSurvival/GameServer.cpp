@@ -7,7 +7,9 @@
 
 #include <SFML/Network/Packet.hpp>
 
+#include "PlayerAction.hpp"
 #include "Utility.hpp"
+#include "WorldInfo.hpp"
 
 //It is essential to set the sockets to non-blocking - m_socket.setBlocking(false)
 //otherwise the server will hang waiting to read input from a connection
@@ -248,12 +250,41 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 	}
 	break;
 
+	case Client::PacketType::UpdateGamesWon:
+	{
+		opt::PlayerIdentifier player_identifier;
+		opt::GamesWon games_won;
+		packet >> player_identifier >> games_won;
+
+		m_player_info[player_identifier].m_games_won = games_won;
+
+		sf::Packet games_won_packet;
+		games_won_packet << static_cast<opt::ServerPacket>(Server::PacketType::GamesWonUpdated)
+			<< player_identifier
+			<< games_won;
+
+		SendToAll(games_won_packet);
+	}
+	break;
+
 	case Client::PacketType::PlayerEvent:
 	{
 		opt::PlayerIdentifier player_identifier;
 		opt::Action action;
 		packet >> player_identifier >> action;
-		NotifyPlayerEvent(player_identifier, action);
+
+		if (static_cast<PlayerAction>(action) == PlayerAction::kAttack)
+		{
+			if (PlayerCanAttack(player_identifier))
+			{
+				PlayerAttack(player_identifier);
+				NotifyPlayerEvent(player_identifier, action);
+			}
+		}
+		else
+		{
+			NotifyPlayerEvent(player_identifier, action);
+		}
 	}
 	break;
 
@@ -273,7 +304,7 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		opt::PlayerIdentifier identifier = GetFreeIdentifier();
 		receiving_peer.m_player_identifiers.emplace_back(identifier);
 
-		m_player_info[identifier].name = std::to_string(identifier);
+		m_player_info[identifier].m_name = std::to_string(identifier);
 		m_player_info[identifier].m_position = sf::Vector2f(0, 0);
 		m_player_info[identifier].m_hitpoints = 100;
 
@@ -315,16 +346,21 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		{
 			opt::PlayerIdentifier player_identifier;
 			sf::Vector2f player_position;
-			opt::HitPoints hitpoints;
-			packet >> player_identifier >> player_position.x >> player_position.y >> hitpoints;
-
-			if (hitpoints <= 0 && m_player_info[player_identifier].m_hitpoints > 0)
-			{
-				m_alive_players--;
-			}
+			packet >> player_identifier >> player_position.x >> player_position.y;
 
 			m_player_info[player_identifier].m_position = player_position;
-			m_player_info[player_identifier].m_hitpoints = hitpoints;
+
+			if (m_player_info[player_identifier].m_hitpoints > 0 && IsPlayerUnderWorld(player_identifier))
+			{
+				m_player_info[player_identifier].m_hitpoints = 0;
+				m_alive_players--;
+
+				sf::Packet notify_packet;
+				notify_packet << static_cast<opt::ServerPacket>(Server::PacketType::PlayerDied)
+					<< player_identifier;
+
+				SendToAll(notify_packet);
+			}
 		}
 	}
 	break;
@@ -384,9 +420,10 @@ void GameServer::HandleIncomingConnections()
 		const opt::PlayerIdentifier identifier = GetFreeIdentifier();
 
 		//Order the new client to spawn its player 1
-		m_player_info[identifier].name = "Player " + std::to_string(identifier);
+		m_player_info[identifier].m_name = "Player " + std::to_string(identifier);
 		m_player_info[identifier].m_position = sf::Vector2f(0, 0);
 		m_player_info[identifier].m_hitpoints = 100;
+		m_player_info[identifier].m_games_won = 0;
 
 
 		sf::Packet packet;
@@ -466,7 +503,8 @@ void GameServer::InformWorldState(sf::TcpSocket& socket)
 			for (opt::PlayerIdentifier identifier : m_peers[i]->m_player_identifiers)
 			{
 				packet << identifier
-					<< m_player_info[identifier].name;
+					<< m_player_info[identifier].m_name
+					<< m_player_info[identifier].m_games_won;
 			}
 		}
 	}
@@ -524,4 +562,19 @@ void GameServer::UpdateDangers(sf::Time dt)
 		<< dt.asSeconds();
 
 	SendToAll(packet);
+}
+
+bool GameServer::PlayerCanAttack(opt::PlayerIdentifier identifier)
+{
+	return true;
+}
+
+void GameServer::PlayerAttack(opt::PlayerIdentifier identifier)
+{
+	sf::FloatRect attack(m_player_info[identifier].m_position, sf::Vector2f(20, 20));
+}
+
+bool GameServer::IsPlayerUnderWorld(opt::PlayerIdentifier identifier)
+{
+	return m_player_info[identifier].m_position.y > WorldInfo::WORLD_HEIGHT;
 }

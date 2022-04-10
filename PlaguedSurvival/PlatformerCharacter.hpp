@@ -25,6 +25,7 @@ public:
 	unsigned GetCategory() const override;
 	sf::FloatRect GetBoundingRect() const override;
 
+	void Attack();
 	void Jump();
 	void ResetJump();
 	bool IsGrounded() const;

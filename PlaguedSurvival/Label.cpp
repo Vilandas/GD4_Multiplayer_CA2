@@ -23,6 +23,11 @@ namespace GUI
 		return m_text.getString();
 	}
 
+	sf::Color Label::GetFillColor() const
+	{
+		return m_text.getFillColor();
+	}
+
 	void Label::SetText(const std::string& text)
 	{
 		m_text.setString(text);

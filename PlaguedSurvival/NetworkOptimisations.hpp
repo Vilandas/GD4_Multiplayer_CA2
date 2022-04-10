@@ -9,5 +9,5 @@ namespace opt
 	typedef sf::Uint8 PlayerCount;
 	typedef sf::Uint8 LocalPlayers;
 	typedef sf::Uint8 Action;
-	typedef sf::Uint8 HitPoints;
+	typedef sf::Int32 GamesWon;
 }

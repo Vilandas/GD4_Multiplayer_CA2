@@ -64,6 +64,24 @@ struct PlatformerJump
 	opt::PlayerIdentifier identifier;
 };
 
+struct PlatformerAttack
+{
+	PlatformerAttack(const opt::PlayerIdentifier identifier)
+		: identifier(identifier)
+	{
+	}
+
+	void operator()(PlatformerCharacter& platformer, sf::Time) const
+	{
+		if (platformer.GetIdentifier() == identifier)
+		{
+			platformer.Attack();
+		}
+	}
+
+	opt::PlayerIdentifier identifier;
+};
+
 Player::Player(sf::TcpSocket* socket, opt::PlayerIdentifier identifier, const KeyBinding* binding)
 	: m_key_binding(binding)
 	, m_current_mission_status(MissionStatus::kMissionRunning)
@@ -190,4 +208,5 @@ void Player::InitialiseActions()
 	m_action_binding[PlayerAction::kMoveLeft].action = DerivedAction<Entity>(EntityDirectionAdder(-1, 0, m_identifier));
 	m_action_binding[PlayerAction::kMoveRight].action = DerivedAction<Entity>(EntityDirectionAdder(+1, 0, m_identifier));
 	m_action_binding[PlayerAction::kJump].action = DerivedAction<PlatformerCharacter>(PlatformerJump(m_identifier));
+	m_action_binding[PlayerAction::kAttack].action = DerivedAction<PlatformerCharacter>(PlatformerAttack(m_identifier));
 }

@@ -19,6 +19,8 @@ namespace Server
 		SpawnSelf,
 		UpdateClientState,
 		UpdateDangerTime,
+		GamesWonUpdated,
+		PlayerDied,
 		MissionSuccess
 	};
 }
@@ -35,6 +37,7 @@ namespace Client
 		RequestCoopPartner,
 		PositionUpdate,
 		GameEvent,
+		UpdateGamesWon,
 		Quit
 	};
 }

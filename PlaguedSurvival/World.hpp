@@ -55,7 +55,6 @@ public:
 
 private:
 	void BuildScene();
-	void UpdateSounds();
 	void KillPlayersNotInWorld();
 
 private:

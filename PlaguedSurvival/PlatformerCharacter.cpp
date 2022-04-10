@@ -52,12 +52,6 @@ PlatformerCharacter::PlatformerCharacter(
 
 	m_arrow.setPosition(-10, 125);
 	m_arrow.scale(2.5f, 2.5f);
-
-	//std::unique_ptr<TextNode> arrow(new TextNode(scene_layers, fonts, "^"));
-	//m_arrow = arrow.get();
-	//m_arrow->setPosition(-10, 125);
-	//m_arrow->scale(2.5f, 2.5f);
-	//AttachChild(std::move(arrow));
 }
 
 unsigned PlatformerCharacter::GetCategory() const
@@ -68,6 +62,10 @@ unsigned PlatformerCharacter::GetCategory() const
 sf::FloatRect PlatformerCharacter::GetBoundingRect() const
 {
 	return GetWorldTransform().transformRect(m_artist.GetSmallestBounds());
+}
+
+void PlatformerCharacter::Attack()
+{
 }
 
 void PlatformerCharacter::Jump()
@@ -196,6 +194,8 @@ void PlatformerCharacter::ApplyGravity(sf::Time dt)
 
 void PlatformerCharacter::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	if (!IsAlive()) return;
+
 	target.draw(m_artist, states);
 	target.draw(*m_name_display, states);
 

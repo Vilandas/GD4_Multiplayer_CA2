@@ -37,9 +37,10 @@ private:
 
 	struct PlayerInfo
 	{
-		std::string name;
+		std::string m_name;
 		sf::Vector2f m_position;
 		sf::Int32 m_hitpoints;
+		opt::GamesWon m_games_won;
 		std::map<opt::Action, bool> m_realtime_actions;
 	};
 
@@ -64,6 +65,11 @@ private:
 	void SendToAll(sf::Packet& packet);
 	void UpdateClientState();
 	void UpdateDangers(sf::Time dt);
+
+	bool PlayerCanAttack(opt::PlayerIdentifier identifier);
+	void PlayerAttack(opt::PlayerIdentifier identifier);
+
+	bool IsPlayerUnderWorld(opt::PlayerIdentifier identifier);
 
 private:
 	sf::Thread m_thread;

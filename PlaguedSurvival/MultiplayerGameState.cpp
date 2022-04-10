@@ -33,6 +33,24 @@ sf::IpAddress GetAddressFromFile()
 	return local_address;
 }
 
+unsigned int GetGamesWonFromFile()
+{
+	{
+		//Try to open existing file game_data.txt
+		std::ifstream input_file("game_data.txt");
+		opt::GamesWon games_won;
+		if (input_file >> games_won)
+		{
+			return games_won;
+		}
+	}
+
+	//If open/read failed, create a new file
+	std::ofstream output_file("game_data.txt");
+	output_file << 0;
+	return 0;
+}
+
 MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool is_host)
 	: State(stack, context)
 	, m_world(*context.window, *context.textures, *context.fonts, *context.sounds, *context.camera, true)
@@ -42,6 +60,9 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, m_music(*context.music)
 	, m_camera(m_window.getDefaultView())
 	, m_lobby_gui(m_window, m_camera)
+	, m_bytes_received()
+	, m_bytes_sent()
+	, m_games_won(GetGamesWonFromFile())
 	, m_connected(false)
 	, m_game_server(nullptr)
 	, m_active_state(true)
@@ -85,6 +106,11 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	Utility::CentreOrigin(m_waiting_for_host_text);
 	m_waiting_for_host_text.setPosition(960, 800);
 
+
+	m_statistics_text.setFont(context.fonts->Get(Fonts::Main));
+	m_statistics_text.setPosition(200.f, 5.f);
+	m_statistics_text.setCharacterSize(10u);
+
 	sf::IpAddress ip;
 	if (m_host)
 	{
@@ -98,7 +124,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 			{
 				sf::Packet packet;
 				packet << static_cast<opt::ClientPacket>(Client::PacketType::RequestStartGame);
-				m_socket.send(packet);
+				SendPacket(packet);
 			});
 
 		m_lobby_gui.Pack(start_button);
@@ -141,6 +167,17 @@ void MultiplayerGameState::Draw()
 			m_window.draw(m_lobby_gui);
 			m_window.draw(m_lobby_text);
 
+			for (const auto& pair : m_players)
+			{
+				const sf::Vector2f position = pair.second.m_name->getPosition();
+				sf::Text text("Wins: " + std::to_string(pair.second.m_games_won), m_font_holder.Get(Fonts::Main), 16);
+				Utility::CentreOrigin(text);
+				text.setFillColor(pair.second.m_name->GetFillColor());
+				text.setPosition(position.x + 200, position.y);
+				m_window.draw(text);
+			}
+
+
 			if (!m_host)
 			{
 				m_window.draw(m_waiting_for_host_text);
@@ -166,10 +203,14 @@ void MultiplayerGameState::Draw()
 	{
 		m_window.draw(m_failed_connection_text);
 	}
+
+	m_window.draw(m_statistics_text);
 }
 
 bool MultiplayerGameState::Update(sf::Time dt)
 {
+	UpdateStatistics(dt);
+
 	//Connected to the Server: Handle all the network logic
 	if (m_connected)
 	{
@@ -192,6 +233,22 @@ bool MultiplayerGameState::Update(sf::Time dt)
 	return true;
 }
 
+void MultiplayerGameState::UpdateStatistics(sf::Time dt)
+{
+	m_statistics_update_time += dt;
+
+	if (m_statistics_update_time >= sf::seconds(1.0f))
+	{
+		m_statistics_text.setString(
+			"Bytes Received / Second = " + std::to_string(m_bytes_received) + "\n" +
+			"Bytes Sent / Second = " + std::to_string(m_bytes_sent));
+
+		m_statistics_update_time -= sf::seconds(1.0f);
+		m_bytes_received = 0;
+		m_bytes_sent = 0;
+	}
+}
+
 void MultiplayerGameState::UpdateLobby(sf::Time dt)
 {
 	ReceivePacket();
@@ -208,7 +265,7 @@ void MultiplayerGameState::UpdateLobby(sf::Time dt)
 			update_packet << identifier;
 		}
 
-		m_socket.send(update_packet);
+		SendPacket(update_packet);
 		m_tick_clock.restart();
 	}
 
@@ -280,7 +337,7 @@ void MultiplayerGameState::UpdateGame(sf::Time dt)
 		packet << game_action.position.x;
 		packet << game_action.position.y;
 
-		m_socket.send(packet);
+		SendPacket(packet);
 	}
 
 	//Regular position updates
@@ -297,11 +354,11 @@ void MultiplayerGameState::UpdateGame(sf::Time dt)
 				position_update_packet
 					<< identifier
 					<< player->getPosition().x
-					<< player->getPosition().y
-					<< static_cast<opt::HitPoints>(player->GetHitPoints());
+					<< player->getPosition().y;
 			}
 		}
-		m_socket.send(position_update_packet);
+
+		SendPacket(position_update_packet);
 		m_tick_clock.restart();
 	}
 	m_time_since_last_packet += dt;
@@ -313,6 +370,8 @@ void MultiplayerGameState::ReceivePacket()
 	sf::Packet packet;
 	if (m_socket.receive(packet) == sf::Socket::Done)
 	{
+		m_bytes_received += packet.getDataSize();
+
 		m_time_since_last_packet = sf::seconds(0.f);
 		opt::ServerPacket packet_type;
 		packet >> packet_type;
@@ -332,6 +391,12 @@ void MultiplayerGameState::ReceivePacket()
 	}
 }
 
+void MultiplayerGameState::SendPacket(sf::Packet& packet)
+{
+	m_bytes_sent += packet.getDataSize();
+	m_socket.send(packet);
+}
+
 bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 {
 	if (m_lobby)
@@ -343,7 +408,7 @@ bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 		{
 			sf::Packet packet;
 			packet << static_cast<opt::ClientPacket>(Client::PacketType::RequestCoopPartner);
-			m_socket.send(packet);
+			SendPacket(packet);
 		}
 	}
 	else
@@ -409,7 +474,7 @@ void MultiplayerGameState::OnDestroy()
 		//Inform server this client is dying
 		sf::Packet packet;
 		packet << static_cast<opt::ClientPacket>(Client::PacketType::Quit);
-		m_socket.send(packet);
+		SendPacket(packet);
 	}
 }
 
@@ -459,6 +524,16 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 		}
 		break;
 
+		case Server::PacketType::GamesWonUpdated:
+		{
+			opt::PlayerIdentifier player_identifier;
+			opt::GamesWon games_won;
+			packet >> player_identifier >> games_won;
+
+			m_players[player_identifier].m_games_won = games_won;
+		}
+		break;
+
 		//Sent by the server to spawn player 1 on connect
 		case Server::PacketType::SpawnSelf:
 		{
@@ -467,8 +542,16 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 
 			GeneratePlayer(player_identifier);
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, GetContext().keys1));
+			m_players[player_identifier].m_games_won = m_games_won;
 			m_local_player_identifiers.push_back(player_identifier);
 			m_world.AddPlayer(player_identifier, m_players[player_identifier].m_name->GetText(), true);
+
+			sf::Packet games_won_packet;
+			games_won_packet << static_cast<opt::ClientPacket>(Client::PacketType::UpdateGamesWon)
+				<< player_identifier
+				<< m_games_won;
+
+			SendPacket(games_won_packet);
 		}
 		break;
 
@@ -477,9 +560,9 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 			opt::PlayerIdentifier player_identifier;
 			packet >> player_identifier;
 
-
 			GeneratePlayer(player_identifier);
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, nullptr));
+			m_players[player_identifier].m_games_won = 0;
 			m_world.AddPlayer(player_identifier, m_players[player_identifier].m_name->GetText(), false);
 		}
 		break;
@@ -507,12 +590,15 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 			{
 				opt::PlayerIdentifier player_identifier;
 				std::string player_name;
+				opt::GamesWon games_won;
 
 				packet >> player_identifier
-					>> player_name;
+					>> player_name
+					>> games_won;
 
 				GeneratePlayer(player_identifier, player_name);
 				m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, nullptr));
+				m_players[player_identifier].m_games_won = games_won;
 				m_world.AddPlayer(player_identifier, player_name, false);
 			}
 		}
@@ -525,6 +611,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 
 			GeneratePlayer(player_identifier);
 			m_players[player_identifier].m_player.reset(new Player(&m_socket, player_identifier, GetContext().keys2));
+			m_players[player_identifier].m_games_won = 0;
 			m_local_player_identifiers.emplace_back(player_identifier);
 			m_world.AddPlayer(player_identifier, std::to_string(player_identifier), false);
 		}
@@ -612,7 +699,25 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 				? "Nobody"
 				: m_players[winner_id].m_name->GetText();
 
+			for (opt::PlayerIdentifier identifier : m_local_player_identifiers)
+			{
+				if (identifier == winner_id)
+				{
+					m_games_won++;
+					SaveData();
+				}
+			}
+
 			RequestStackPush(StateID::kGameOver);
+		}
+		break;
+
+		case Server::PacketType::PlayerDied:
+		{
+			opt::PlayerIdentifier player_identifier;
+			packet >> player_identifier;
+
+			m_world.GetPlayer(player_identifier)->Kill();
 		}
 		break;
 	}
@@ -621,15 +726,7 @@ void MultiplayerGameState::HandlePacket(opt::ServerPacket packet_type, sf::Packe
 void MultiplayerGameState::GeneratePlayer(opt::PlayerIdentifier identifier)
 {
 	std::string name = "Player " + std::to_string(identifier);
-	const auto label = std::make_shared<GUI::Label>(name, m_font_holder);
-
-	label->SetCharacterSize(20);
-	label->CentreOriginText();
-	label->setPosition(960, 220 + (30 * identifier));
-	label->SetFillColor(ExtraColors::GetColor(static_cast<PlayerColors>(identifier - 1)));
-
-	m_players[identifier].m_name = label;
-	m_lobby_gui.Pack(label);
+	GeneratePlayer(identifier, name);
 }
 
 void MultiplayerGameState::GeneratePlayer(opt::PlayerIdentifier identifier, const std::string& name)
@@ -643,4 +740,13 @@ void MultiplayerGameState::GeneratePlayer(opt::PlayerIdentifier identifier, cons
 
 	m_players[identifier].m_name = label;
 	m_lobby_gui.Pack(label);
+}
+
+void MultiplayerGameState::SaveData() const
+{
+	std::ofstream save_data;
+	save_data.open("game_data.txt", std::fstream::out);
+
+	save_data << m_games_won;
+	save_data.close();
 }

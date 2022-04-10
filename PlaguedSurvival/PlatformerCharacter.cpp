@@ -37,6 +37,7 @@ PlatformerCharacter::PlatformerCharacter(
 	, m_artist(Table[static_cast<int>(type)].m_animation_data.ToVector(), textures)
 	, m_sounds(sounds)
 	, m_name_display(nullptr)
+	, m_arrow("^", fonts.Get(Fonts::Main), 20)
 	, m_coyote_time(Table[static_cast<int>(type)].m_coyote_time)
 	, m_air_time(0)
 	, m_jumping(false)
@@ -48,6 +49,15 @@ PlatformerCharacter::PlatformerCharacter(
 	m_name_display->setPosition(0, 110);
 	m_name_display->scale(1.5f, 1.5f);
 	AttachChild(std::move(name_display));
+
+	m_arrow.setPosition(-10, 125);
+	m_arrow.scale(2.5f, 2.5f);
+
+	//std::unique_ptr<TextNode> arrow(new TextNode(scene_layers, fonts, "^"));
+	//m_arrow = arrow.get();
+	//m_arrow->setPosition(-10, 125);
+	//m_arrow->scale(2.5f, 2.5f);
+	//AttachChild(std::move(arrow));
 }
 
 unsigned PlatformerCharacter::GetCategory() const
@@ -186,8 +196,13 @@ void PlatformerCharacter::ApplyGravity(sf::Time dt)
 
 void PlatformerCharacter::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(*m_name_display, states);
 	target.draw(m_artist, states);
+	target.draw(*m_name_display, states);
+
+	if (m_is_camera_target)
+	{
+		target.draw(m_arrow, states);
+	}
 }
 
 void PlatformerCharacter::UpdateCurrent(sf::Time dt, CommandQueue& commands)

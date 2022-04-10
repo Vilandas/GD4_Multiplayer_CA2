@@ -348,6 +348,14 @@ bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 	}
 	else
 	{
+		//If B pressed, toggle bounds vision
+		if (event.key.code == sf::Keyboard::B && event.type == sf::Event::KeyReleased)
+		{
+			const bool current_flag = WorldInfo::Instance().ShowCollisionBounds();
+			WorldInfo::Instance().SetShowCollisionBounds(!current_flag);
+		}
+
+
 		//Game input handling
 		CommandQueue& commands = m_world.GetCommandQueue();
 

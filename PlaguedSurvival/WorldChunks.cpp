@@ -3,12 +3,12 @@
 #include <iostream>
 
 #include "SceneNode.hpp"
+#include "WorldInfo.hpp"
 
 WorldChunks WorldChunks::m_instance;
 
 WorldChunks::WorldChunks()
-	: m_width_per_chunk(WORLD_WIDTH/WORLD_CHUNKS)
-	, m_chunks(WORLD_CHUNKS)
+	: m_chunks(WorldInfo::WORLD_CHUNKS)
 {
 }
 
@@ -22,13 +22,13 @@ void WorldChunks::Clear()
 
 void WorldChunks::AddToChunk(SceneNode* scene_node, Layers layer)
 {
-	const size_t index = static_cast<size_t>(std::floorf(scene_node->getPosition().x / m_width_per_chunk));
+	const size_t index = static_cast<size_t>(std::floorf(scene_node->getPosition().x / WorldInfo::WIDTH_PER_CHUNK));
 	m_chunks[index][layer].emplace_back(scene_node);
 }
 
 void WorldChunks::RemoveFromChunk(SceneNode* scene_node, Layers layer)
 {
-	const size_t index = static_cast<size_t>(std::floorf(scene_node->getPosition().x / m_width_per_chunk));
+	const size_t index = static_cast<size_t>(std::floorf(scene_node->getPosition().x / WorldInfo::WIDTH_PER_CHUNK));
 
 	auto& chunk = m_chunks[index][layer];
 	chunk.erase(std::remove(chunk.begin(), chunk.end(), scene_node), chunk.end());
@@ -36,7 +36,7 @@ void WorldChunks::RemoveFromChunk(SceneNode* scene_node, Layers layer)
 
 void WorldChunks::CheckCollision(SceneNode* scene_node, Layers layer, std::set<SceneNode*>& collisions)
 {
-	size_t index = static_cast<size_t>(std::floorf(scene_node->getPosition().x / m_width_per_chunk));
+	size_t index = static_cast<size_t>(std::floorf(scene_node->getPosition().x / WorldInfo::WIDTH_PER_CHUNK));
 	size_t iterations = 3;
 
 	if (index == 0)
@@ -53,13 +53,13 @@ void WorldChunks::CheckCollision(SceneNode* scene_node, Layers layer, std::set<S
 		index--;
 	}
 
-	//int counter = 0;
+	int counter = 0;
 
 	for (size_t i = 0; i < iterations; i++)
 	{
 		for (const auto& node : m_chunks[index + i][layer])
 		{
-			//counter++;
+			counter++;
 			scene_node->PredictCollisionWithNode(*node, collisions);
 		}
 	}

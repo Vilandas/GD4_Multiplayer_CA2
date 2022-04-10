@@ -13,6 +13,7 @@
 #include "Layers.hpp"
 #include "Utility.hpp"
 #include "WorldChunks.hpp"
+#include "WorldInfo.hpp"
 
 class SceneNode : public sf::Transformable, public sf::Drawable, private sf::NonCopyable
 {

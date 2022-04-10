@@ -167,8 +167,11 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	DrawChildren(target, states);
 	sf::FloatRect rect = GetBoundingRect();
 
-	//if (GetCategory() == static_cast<unsigned int>(Category::kPlatform)) return;
-	//DrawBoundingRect(target, states, rect);
+	if (WorldInfo::Instance().ShowCollisionBounds())
+	{
+		if (GetCategory() == static_cast<unsigned int>(Category::kPlatform)) return;
+		DrawBoundingRect(target, states, rect);
+	}
 }
 
 void SceneNode::DrawCurrent(sf::RenderTarget&, sf::RenderStates states) const

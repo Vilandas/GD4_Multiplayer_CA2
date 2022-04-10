@@ -20,9 +20,7 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 	, m_camera(camera)
 	, m_scene_layers()
 	, m_scenegraph(m_scene_layers)
-	, m_tile_size(64)
-	, m_world_bounds(0.f, 0.f, m_tile_size * 52.f, m_tile_size * 24.f)
-	, m_spawn_position(100, 100)
+	, m_world_bounds(0.f, 0.f, WorldInfo::WORLD_WIDTH, WorldInfo::WORLD_HEIGHT)
 	, m_alive_players(0)
 	, m_networked_world(networked)
 	, m_network_node(nullptr)
@@ -31,7 +29,6 @@ World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolde
 {
 	m_scene_texture.create(m_window.getSize().x, m_window.getSize().y);
 
-	m_camera.SetCenter(m_spawn_position);
 	//m_camera.SetSize(384 * 1.5f, 216 * 1.5f);
 	//m_camera.SetSize(640, 360);
 	m_camera.SetBoundsConstraint(m_world_bounds);
@@ -282,8 +279,8 @@ void World::BuildScene()
 
 				tile->setScale(0.5, 0.5);
 				tile->setPosition(
-					m_tile_size + j * m_tile_size,
-					(m_world_bounds.height - m_tile_size * 17) + i * m_tile_size
+					WorldInfo::TILE_SIZE + j * WorldInfo::TILE_SIZE,
+					(m_world_bounds.height - WorldInfo::TILE_SIZE * 17) + i * WorldInfo::TILE_SIZE
 				);
 
 				TileNode* current_node = tile.get();
@@ -324,14 +321,6 @@ void World::BuildScene()
 
 		}
 	}
-
-	//Prepare the background
-	//sf::Texture& nebula = m_textures.Get(Textures::kBlueNebula);
-	//nebula.setRepeated(true);
-
-	//Add the background sprite to our scene
-	//std::unique_ptr<SpriteNode> nebula_sprite(new SpriteNode(m_scene_layers, nebula, GetBackgroundRect(nebula)));
-	//m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(nebula_sprite));
 
 	if (m_networked_world)
 	{

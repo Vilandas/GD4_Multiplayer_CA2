@@ -26,12 +26,8 @@ public:
 private:
 	WorldChunks();
 
-	const int WORLD_CHUNKS = 52;
-	const float WORLD_WIDTH = 3328;
-
 private:
 	static WorldChunks m_instance;
 
-	float m_width_per_chunk;
 	std::vector<std::unordered_map<Layers, std::vector<SceneNode*>>> m_chunks;
 };

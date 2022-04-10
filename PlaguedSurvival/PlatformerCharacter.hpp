@@ -57,6 +57,7 @@ private:
 	AnimatedSpriteArtist m_artist;
 	SoundPlayer& m_sounds;
 	TextNode* m_name_display;
+	sf::Text m_arrow;
 	float m_coyote_time;
 	float m_air_time;
 	bool m_jumping;

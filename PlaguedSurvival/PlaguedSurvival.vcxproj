@@ -194,6 +194,7 @@
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="WorldChunks.cpp" />
+    <ClCompile Include="WorldInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AircraftType.hpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="Vector2iHash.hpp" />
     <ClInclude Include="World.hpp" />
     <ClInclude Include="WorldChunks.hpp" />
+    <ClInclude Include="WorldInfo.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ResourceHolder.inl" />

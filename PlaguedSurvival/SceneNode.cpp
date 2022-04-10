@@ -8,6 +8,10 @@
 #include "Collision.hpp"
 #include "Utility.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 SceneNode::SceneNode(
 	const SceneLayers& scene_layers,
 	Category::Type category)

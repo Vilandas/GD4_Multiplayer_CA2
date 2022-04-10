@@ -5,6 +5,10 @@
 
 #include "DataTables.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 namespace sf
 {
 	class Texture;

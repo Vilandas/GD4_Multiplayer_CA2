@@ -5,6 +5,10 @@
 #include "SceneNode.hpp"
 #include "Vector2iHash.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class Entity : public SceneNode
 {
 public:

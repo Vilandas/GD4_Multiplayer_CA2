@@ -6,6 +6,10 @@
 
 #include "ResourceIdentifiers.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 struct AnimationData
 {
 	Textures m_texture;

@@ -4,6 +4,10 @@
 
 #include "Dangerous.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class DangerTrigger
 {
 public:

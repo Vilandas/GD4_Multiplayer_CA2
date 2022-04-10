@@ -5,6 +5,10 @@
 
 #include "Layers.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class SceneNode;
 
 class WorldChunks

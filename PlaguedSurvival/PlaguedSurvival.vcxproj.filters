@@ -275,9 +275,6 @@
     <ClInclude Include="GameState.hpp">
       <Filter>Header Files\States</Filter>
     </ClInclude>
-    <ClInclude Include="AircraftType.hpp">
-      <Filter>Header Files\Enums</Filter>
-    </ClInclude>
     <ClInclude Include="MusicThemes.hpp">
       <Filter>Header Files\Enums</Filter>
     </ClInclude>

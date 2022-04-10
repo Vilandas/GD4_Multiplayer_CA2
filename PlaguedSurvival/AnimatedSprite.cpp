@@ -5,6 +5,10 @@
 
 #include "Utility.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 AnimatedSprite::AnimatedSprite(const AnimationData& data, const sf::Texture& texture)
 	: m_time_since_last_frame(0)
 	, m_time_per_frame(data.m_time_per_frame)

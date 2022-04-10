@@ -15,6 +15,10 @@
 #include "WorldChunks.hpp"
 #include "WorldInfo.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class SceneNode : public sf::Transformable, public sf::Drawable, private sf::NonCopyable
 {
 public:

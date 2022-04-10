@@ -1,4 +1,9 @@
 #pragma once
+
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class WorldInfo
 {
 public:

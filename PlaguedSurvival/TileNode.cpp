@@ -2,6 +2,10 @@
 
 #include <utility>
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 TileNode::TileNode(const SceneLayers& scene_layers, const sf::Texture& texture, const sf::Texture& crack_texture, int hit_points)
 	: Entity(scene_layers, hit_points)
 	, m_sprite(texture)

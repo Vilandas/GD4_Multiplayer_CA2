@@ -5,6 +5,10 @@
 
 #include "ResourceHolder.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 AnimatedSpriteArtist::AnimatedSpriteArtist(std::vector<AnimatedSprite> sprite_states)
 	: m_sprite_states(std::move(sprite_states))
 	, m_current_sprite_index(0)

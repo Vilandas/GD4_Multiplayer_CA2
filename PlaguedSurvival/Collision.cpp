@@ -2,6 +2,10 @@
 
 #include "Utility.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 /// <summary>
 /// Tests for an intersection between two SceneNodes. Predicts if two nodes will collide.
 /// </summary>

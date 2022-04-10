@@ -4,6 +4,10 @@
 #include "CollisionLocation.hpp"
 #include "Entity.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class Collision
 {
 public:

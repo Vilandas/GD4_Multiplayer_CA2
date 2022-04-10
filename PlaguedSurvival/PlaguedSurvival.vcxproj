@@ -197,7 +197,6 @@
     <ClCompile Include="WorldInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AircraftType.hpp" />
     <ClInclude Include="AnimatedSprite.hpp" />
     <ClInclude Include="AnimatedSpriteArtist.hpp" />
     <ClInclude Include="Animation.hpp" />

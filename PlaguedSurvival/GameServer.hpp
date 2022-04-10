@@ -12,6 +12,10 @@
 
 #include "NetworkOptimisations.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class GameServer
 {
 public:

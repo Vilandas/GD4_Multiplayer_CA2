@@ -1,5 +1,9 @@
 #include "Camera.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 Camera::Camera(sf::View view)
 	: m_view(view)
 	, m_has_constraint(false)

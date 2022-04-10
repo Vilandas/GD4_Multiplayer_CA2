@@ -11,8 +11,9 @@
 #include "Utility.hpp"
 #include "WorldInfo.hpp"
 
-//It is essential to set the sockets to non-blocking - m_socket.setBlocking(false)
-//otherwise the server will hang waiting to read input from a connection
+/**
+ * Vilandas Morrissey - D00218436
+ */
 
 GameServer::RemotePeer::RemotePeer() :m_ready(false), m_timed_out(false)
 {

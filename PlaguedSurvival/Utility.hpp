@@ -7,6 +7,10 @@
 
 #include "Animation.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 namespace sf
 {
 	class RectangleShape;

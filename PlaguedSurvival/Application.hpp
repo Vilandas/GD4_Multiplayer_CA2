@@ -11,6 +11,10 @@
 #include "ResourceIdentifiers.hpp"
 #include "StateStack.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class Application
 {
 public:

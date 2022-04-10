@@ -3,6 +3,10 @@
 #include "ParticleType.hpp"
 #include "PlatformerCharacterType.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 std::vector<PlatformerCharacterData> InitializePlatformerCharacterData()
 {
 	std::vector<PlatformerCharacterData> data(static_cast<int>(PlatformerCharacterType::kPlatformerCount));

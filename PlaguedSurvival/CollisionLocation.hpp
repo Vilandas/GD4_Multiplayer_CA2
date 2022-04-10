@@ -1,4 +1,9 @@
 #pragma once
+
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 enum class CollisionLocation
 {
 	kNone = 0,

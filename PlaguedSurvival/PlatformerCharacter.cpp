@@ -9,6 +9,10 @@
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 enum class CollisionLocation;
 
 namespace

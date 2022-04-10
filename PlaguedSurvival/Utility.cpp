@@ -11,6 +11,10 @@
 
 #include "Animation.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 namespace
 {
 	unsigned long GenerateSeed()

@@ -10,6 +10,10 @@
 #include "SettingsState.hpp"
 #include "MultiplayerGameState.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 const sf::Time Application::kTimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()

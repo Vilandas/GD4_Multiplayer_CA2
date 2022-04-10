@@ -10,6 +10,10 @@
 #include "TextNode.hpp"
 #include "SoundPlayer.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class PlatformerCharacter : public Entity
 {
 public:

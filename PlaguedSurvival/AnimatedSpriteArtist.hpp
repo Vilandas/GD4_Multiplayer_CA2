@@ -3,6 +3,10 @@
 
 #include "AnimatedSprite.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class AnimatedSpriteArtist : public sf::Drawable, public sf::Transformable
 {
 public:

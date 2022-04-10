@@ -5,6 +5,10 @@
 #include "SceneNode.hpp"
 #include "WorldInfo.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 WorldChunks WorldChunks::m_instance;
 
 WorldChunks::WorldChunks()

@@ -5,6 +5,10 @@
 #include "DangerTrigger.hpp"
 #include "Entity.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class TileNode : public Entity, public Dangerous
 {
 public:

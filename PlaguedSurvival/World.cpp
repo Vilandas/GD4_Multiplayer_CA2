@@ -12,6 +12,10 @@
 #include "TileNode.hpp"
 #include "Utility.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 World::World(sf::RenderWindow& render_window, TextureHolder& textures, FontHolder& fonts, SoundPlayer& sounds, Camera& camera, bool networked)
 	: m_window(render_window)
 	, m_textures(textures)

@@ -11,6 +11,10 @@
 #include "Label.hpp"
 #include "NetworkProtocol.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class MultiplayerGameState : public State
 {
 public:

@@ -2,6 +2,10 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/View.hpp>
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 class Camera : public sf::Transformable
 {
 public:

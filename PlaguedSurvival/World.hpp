@@ -20,6 +20,10 @@
 #include "PlatformerCharacter.hpp"
 #include "WorldInfo.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 namespace sf
 {
 	class RenderTarget;

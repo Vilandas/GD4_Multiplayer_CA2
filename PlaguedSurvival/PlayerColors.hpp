@@ -1,6 +1,10 @@
 #pragma once
 #include <SFML/Graphics/Color.hpp>
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 enum class PlayerColors
 {
 	kWhite,

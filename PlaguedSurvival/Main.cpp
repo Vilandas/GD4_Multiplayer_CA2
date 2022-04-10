@@ -1,6 +1,10 @@
 #include <iostream>
 #include "Application.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 int main()
 {
 	try

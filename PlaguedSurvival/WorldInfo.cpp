@@ -1,5 +1,9 @@
 #include "WorldInfo.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 WorldInfo WorldInfo::m_instance;
 
 WorldInfo::WorldInfo()

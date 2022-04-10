@@ -1,6 +1,10 @@
 #pragma once
 #include <SFML/System/Vector2.hpp>
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 const unsigned short SERVER_PORT = 50000;
 
 namespace Server

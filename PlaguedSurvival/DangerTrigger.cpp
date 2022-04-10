@@ -2,6 +2,10 @@
 
 #include "Utility.hpp"
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 DangerTrigger DangerTrigger::m_instance;
 
 DangerTrigger::DangerTrigger()

@@ -1,6 +1,10 @@
 #pragma once
 #include <SFML/Config.hpp>
 
+/**
+ * Vilandas Morrissey - D00218436
+ */
+
 namespace opt
 {
 	typedef sf::Uint8 ServerPacket;
